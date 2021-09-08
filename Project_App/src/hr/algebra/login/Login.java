@@ -7,37 +7,29 @@ package hr.algebra.login;
 
 import hr.algebra.dal.Repository;
 import hr.algebra.dal.RepositoryFactory;
-import hr.algebra.model.Actor;
-import hr.algebra.model.Movie;
 import hr.algebra.model.User;
 import hr.algebra.utils.MessageUtils;
-import java.sql.Date;
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.text.DateFormatter;
-import microsoft.sql.DateTimeOffset;
+import javax.swing.JFrame;
 
 /**
  *
  * @author lcabraja
  */
-public class LoginForm extends javax.swing.JFrame {
+public class Login extends javax.swing.JPanel {
 
     /**
-     * Creates new form LoginForm
+     * Creates new form Login
      */
-    public LoginForm() {
+    private User lastUser;
+
+    JFrame daddy;
+
+    public Login(JFrame father) {
         initComponents();
+        init(father);
     }
 
     /**
@@ -49,20 +41,21 @@ public class LoginForm extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        btLogin = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
         tfUsername = new javax.swing.JTextField();
         pfPassword = new javax.swing.JPasswordField();
         btCheckUser = new javax.swing.JButton();
-        btLogin = new javax.swing.JButton();
-        jLabel1 = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setName("Login"); // NOI18N
-        setResizable(false);
-        addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowOpened(java.awt.event.WindowEvent evt) {
-                formWindowOpened(evt);
+        btLogin.setText("Log in");
+        btLogin.setEnabled(false);
+        btLogin.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btLoginActionPerformed(evt);
             }
         });
+
+        jLabel1.setText("Enter username...");
 
         pfPassword.setEnabled(false);
 
@@ -73,13 +66,8 @@ public class LoginForm extends javax.swing.JFrame {
             }
         });
 
-        btLogin.setText("Log in");
-        btLogin.setEnabled(false);
-
-        jLabel1.setText("Enter username...");
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+        this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
@@ -111,14 +99,18 @@ public class LoginForm extends javax.swing.JFrame {
                     .addComponent(btLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(64, 64, 64))
         );
-
-        pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
-        setLocationRelativeTo(null);
-        setTitle("Login");
-    }//GEN-LAST:event_formWindowOpened
+    private void btLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btLoginActionPerformed
+        if (pfPassword.getText().trim().isEmpty()) {
+            return;
+        }
+        if (lastUser.getPasswordHash().equals(pfPassword.getText())) { // let's pretend this is hashed, salted and peppered
+
+        } else {
+            MessageUtils.showInformationMessage("Wrong password", "You have entered an incorrect password, please try again...");
+        }
+    }//GEN-LAST:event_btLoginActionPerformed
 
     private void btCheckUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btCheckUserActionPerformed
         if (tfUsername.getText().trim().isEmpty()) {
@@ -128,62 +120,18 @@ public class LoginForm extends javax.swing.JFrame {
             Repository repository = RepositoryFactory.getRepository();
             Optional<User> potentialUser = repository.selectUser(tfUsername.getText().trim());
             if (potentialUser.isPresent()) {
-                User user = potentialUser.get();
-                jLabel1.setText("User: " + user.getUsername() + " | Role: " + user.getRole() + " | Access Level: " + user.getAccessLevel());
+                lastUser = potentialUser.get();
+                jLabel1.setText("User: " + lastUser.getUsername() + " | Role: " + lastUser.getRole() + " | Access Level: " + lastUser.getAccessLevel());
                 pfPassword.setEnabled(true);
                 btLogin.setEnabled(true);
             }
 
         } catch (Exception ex) {
-            Logger.getLogger(LoginForm.class.getName()).log(Level.SEVERE, null, ex);
-            MessageUtils.showErrorMessage("Database connection error", "The program could not connect to the SQL database, exiting...");
-//            System.exit(1);
+            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+            MessageUtils.showErrorMessage("Database connection error", "The program could not connect to the SQL database, please try again later...");
         }
-//        Movie movie = new Movie("Crouching Tiger Hidden Dragon", "Lu Bu", toString, "<div>carrot</div", 99, "Oriental", "C:/poster.jpg", "https://blitz-cinestar.hr/trailer", "https://blitz-cinestar.hr/link", "https://blitz-cinestar.hr/guid", Date.valueOf("2021-09-09"));
-//        try {
-//            Repository repository = RepositoryFactory.getRepository();
-//            int createActor = repository.createMovie(movie);
-//            MessageUtils.showErrorMessage("Test", String.valueOf(createActor));
-//        } catch (Exception ex) {
-//            Logger.getLogger(LoginForm.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-
     }//GEN-LAST:event_btCheckUserActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(LoginForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(LoginForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(LoginForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(LoginForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new LoginForm().setVisible(true);
-            }
-        });
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btCheckUser;
@@ -192,4 +140,8 @@ public class LoginForm extends javax.swing.JFrame {
     private javax.swing.JPasswordField pfPassword;
     private javax.swing.JTextField tfUsername;
     // End of variables declaration//GEN-END:variables
+
+    private void init(JFrame father) {
+        daddy = father;
+    }
 }
