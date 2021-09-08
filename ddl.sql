@@ -214,7 +214,21 @@ go
 create proc proc_read_movie @IDMovie int
 as
 begin
-    select * from Movie where IDMovie = @IDMovie
+    select IDMovie,
+           M.Title,
+           OriginalTitle,
+           DatePublished,
+           HTMLDescription,
+           Length,
+           G.Title,
+           PosterFilePath,
+           TrailerLink,
+           Link,
+           GUID,
+           StartsPlaying
+    from Movie M
+             full join Genres G on M.Genre = G.IDGenre
+    where IDMovie = @IDMovie
 end
 go
 drop procedure if exists proc_read_movies
