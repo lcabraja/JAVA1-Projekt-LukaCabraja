@@ -39,4 +39,14 @@ public interface Repository {
     List<Movie> selectMovies() throws Exception;
     
     Optional<User> selectUser(String username) throws Exception;
+    
+    void createMovieActor(int MovieID, int ActorID) throws Exception;
+    void createMovieActors(int MovieID, List<Actor> actors) throws Exception;    
+    void deleteMovieActor(int MovieID, int ActorID) throws Exception;
+    List<Actor> selectMovieActors(int MovieID) throws Exception;
+    
+    void createMovieDirector(int MovieID, int DirectorID) throws Exception;
+    void createMovieDirectors(int MovieID, List<Director> directors) throws Exception;    
+    void deleteMovieDirector(int MovieID, int DirectorID) throws Exception;
+    List<Director> selectMovieDirectors(int MovieID) throws Exception;
 }
