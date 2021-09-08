@@ -185,10 +185,20 @@ begin
     exec proc_create_default_user
 end
 go
------------------------------------------------------
+drop procedure if exists proc_get_user
+go
+create procedure proc_get_user @Search nvarchar(128)
+as
+begin
+    select IDUser, Username, PasswordHash, Title, AccessLevel
+    from Users U
+             inner join Roles R2 on R2.IDRole = U.RoleID
+    where Username like @Search
+end
+    -----------------------------------------------------
 -- CRUD movie
 -----------------------------------------------------
-drop procedure if exists proc_create_movie
+    drop procedure if exists proc_create_movie
 go
 create proc proc_create_movie @Title nvarchar(256),
                               @OriginalTitle nvarchar(256),
