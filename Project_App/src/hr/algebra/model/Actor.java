@@ -16,9 +16,13 @@ public class Actor {
     private String FullName;
     private String AlternateName;
 
-    public Actor(int PersonID, String FullName, String AlternateName) {
-        this.PersonID = PersonID;
+    public Actor(String FullName) {
         this.FullName = FullName;
+    }
+
+    public Actor(int PersonID, String FullName, String AlternateName) {
+        this(FullName);
+        this.PersonID = PersonID;
         this.AlternateName = AlternateName;
     }
 
@@ -50,7 +54,5 @@ public class Actor {
     public void setAlternateName(String AlternateName) {
         this.AlternateName = AlternateName;
     }
-    
-    
 
 }

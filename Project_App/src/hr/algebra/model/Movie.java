@@ -6,6 +6,10 @@
 package hr.algebra.model;
 
 import java.sql.Date;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import microsoft.sql.DateTimeOffset;
 
 /**
@@ -13,6 +17,8 @@ import microsoft.sql.DateTimeOffset;
  * @author lcabraja
  */
 public class Movie {
+
+    public static final DateTimeFormatter DATE_FROM_PARSER = DateTimeFormatter.RFC_1123_DATE_TIME;
 
     private int IDMovie;
     private String Title;
@@ -26,11 +32,16 @@ public class Movie {
     private String Link;
     private String GUID;
     private Date StartsPlaying;
+    private List<Actor> Actors;
+    private List<Director> Directors;
 
     public Movie() {
+        Actors = new ArrayList<>();
+        Directors = new ArrayList<>();
     }
 
     public Movie(String Title, String OriginalTitle, DateTimeOffset DatePublished, String HTMLDescription, int Length, String Genre, String PosterFilePath, String TrailerLink, String Link, String GUID, Date StartsPlaying) {
+        this();
         this.Title = Title;
         this.OriginalTitle = OriginalTitle;
         this.DatePublished = DatePublished;
@@ -47,6 +58,22 @@ public class Movie {
     public Movie(int IDMovie, String Title, String OriginalTitle, DateTimeOffset DatePublished, String HTMLDescription, int Length, String Genre, String PosterFilePath, String TrailerLink, String Link, String GUID, Date StartsPlaying) {
         this(Title, OriginalTitle, DatePublished, HTMLDescription, Length, Genre, PosterFilePath, TrailerLink, Link, GUID, StartsPlaying);
         this.IDMovie = IDMovie;
+    }
+
+    public List<Actor> getActors() {
+        return Actors;
+    }
+
+    public void setActors(List<Actor> Actors) {
+        this.Actors = Actors;
+    }
+
+    public List<Director> getDirectors() {
+        return Directors;
+    }
+
+    public void setDirectors(List<Director> Directors) {
+        this.Directors = Directors;
     }
 
     public int getIDMovie() {
@@ -141,4 +168,34 @@ public class Movie {
         this.StartsPlaying = StartsPlaying;
     }
 
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 67 * hash + this.IDMovie;
+        hash = 67 * hash + Objects.hashCode(this.Title);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Movie other = (Movie) obj;
+        if (this.IDMovie != other.IDMovie) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "Movie{" + "IDMovie=" + IDMovie + ", Title=" + Title + ", OriginalTitle=" + OriginalTitle + ", DatePublished=" + DatePublished + ", HTMLDescription=" + HTMLDescription + ", Length=" + Length + ", Genre=" + Genre + ", PosterFilePath=" + PosterFilePath + ", TrailerLink=" + TrailerLink + ", Link=" + Link + ", GUID=" + GUID + ", StartsPlaying=" + StartsPlaying + '}';
+    }
 }
