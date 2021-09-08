@@ -5,6 +5,28 @@
  */
 package hr.algebra.login;
 
+import hr.algebra.dal.Repository;
+import hr.algebra.dal.RepositoryFactory;
+import hr.algebra.model.Actor;
+import hr.algebra.model.Movie;
+import hr.algebra.model.User;
+import hr.algebra.utils.MessageUtils;
+import java.sql.Date;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.util.Arrays;
+import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.text.DateFormatter;
+import microsoft.sql.DateTimeOffset;
+
 /**
  *
  * @author lcabraja
@@ -42,13 +64,17 @@ public class LoginForm extends javax.swing.JFrame {
             }
         });
 
-        tfUsername.setText("jTextField1");
-
-        pfPassword.setText("jPasswordField1");
+        pfPassword.setEnabled(false);
 
         btCheckUser.setText("Check Username");
+        btCheckUser.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btCheckUserActionPerformed(evt);
+            }
+        });
 
         btLogin.setText("Log in");
+        btLogin.setEnabled(false);
 
         jLabel1.setText("Enter username...");
 
@@ -93,6 +119,36 @@ public class LoginForm extends javax.swing.JFrame {
         setLocationRelativeTo(null);
         setTitle("Login");
     }//GEN-LAST:event_formWindowOpened
+
+    private void btCheckUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btCheckUserActionPerformed
+        if (tfUsername.getText().trim().isEmpty()) {
+            return;
+        }
+        try {
+            Repository repository = RepositoryFactory.getRepository();
+            Optional<User> potentialUser = repository.selectUser(tfUsername.getText().trim());
+            if (potentialUser.isPresent()) {
+                User user = potentialUser.get();
+                jLabel1.setText("User: " + user.getUsername() + " | Role: " + user.getRole() + " | Access Level: " + user.getAccessLevel());
+                pfPassword.setEnabled(true);
+                btLogin.setEnabled(true);
+            }
+
+        } catch (Exception ex) {
+            Logger.getLogger(LoginForm.class.getName()).log(Level.SEVERE, null, ex);
+            MessageUtils.showErrorMessage("Database connection error", "The program could not connect to the SQL database, exiting...");
+//            System.exit(1);
+        }
+//        Movie movie = new Movie("Crouching Tiger Hidden Dragon", "Lu Bu", toString, "<div>carrot</div", 99, "Oriental", "C:/poster.jpg", "https://blitz-cinestar.hr/trailer", "https://blitz-cinestar.hr/link", "https://blitz-cinestar.hr/guid", Date.valueOf("2021-09-09"));
+//        try {
+//            Repository repository = RepositoryFactory.getRepository();
+//            int createActor = repository.createMovie(movie);
+//            MessageUtils.showErrorMessage("Test", String.valueOf(createActor));
+//        } catch (Exception ex) {
+//            Logger.getLogger(LoginForm.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+
+    }//GEN-LAST:event_btCheckUserActionPerformed
 
     /**
      * @param args the command line arguments

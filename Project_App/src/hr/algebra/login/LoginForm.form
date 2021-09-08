@@ -70,23 +70,24 @@
   </Layout>
   <SubComponents>
     <Component class="javax.swing.JTextField" name="tfUsername">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="jTextField1"/>
-      </Properties>
     </Component>
     <Component class="javax.swing.JPasswordField" name="pfPassword">
       <Properties>
-        <Property name="text" type="java.lang.String" value="jPasswordField1"/>
+        <Property name="enabled" type="boolean" value="false"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JButton" name="btCheckUser">
       <Properties>
         <Property name="text" type="java.lang.String" value="Check Username"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btCheckUserActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="btLogin">
       <Properties>
         <Property name="text" type="java.lang.String" value="Log in"/>
+        <Property name="enabled" type="boolean" value="false"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel1">

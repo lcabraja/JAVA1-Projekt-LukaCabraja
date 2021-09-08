@@ -190,7 +190,7 @@ go
 create procedure proc_get_user @Search nvarchar(128)
 as
 begin
-    select IDUser, Username, PasswordHash, Title, AccessLevel
+    select IDUser, Username, PasswordHash, Title as Role, AccessLevel
     from Users U
              inner join Roles R2 on R2.IDRole = U.RoleID
     where Username like @Search
@@ -455,7 +455,6 @@ begin
       and ActorID = @ActorID
 end
 go
-
 -----------------------------------------------------
 -- CRUD movie - director
 -----------------------------------------------------
