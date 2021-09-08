@@ -5,10 +5,18 @@
  */
 package hr.algebra.dal;
 
+import hr.algebra.dal.sql.SqlRepository;
+
 /**
  *
  * @author lcabraja
  */
 public class RepositoryFactory {
-    
+
+    private RepositoryFactory() {
+    }
+
+    public static Repository getRepository() throws Exception {
+        return new SqlRepository();
+    }
 }
