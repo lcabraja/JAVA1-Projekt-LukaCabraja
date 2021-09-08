@@ -440,7 +440,7 @@ go
 create proc proc_read_movie_actor @MovieID int
 as
 begin
-    select ActorID from MovieActor where MovieID = @MovieID
+    select A.* from MovieActor MA inner join Actors A on A.IDActor = MA.ActorID where MovieID = @MovieID
 end
 go
 drop procedure if exists proc_delete_movie_actor
@@ -474,7 +474,7 @@ go
 create proc proc_read_movie_director @MovieID int
 as
 begin
-    select DirectorID from MovieDirector where MovieID = @MovieID
+    select D.* from MovieDirector MD inner join Directors D on D.IDDirector = MD.DirectorID where MovieID = @MovieID
 end
 go
 drop procedure if exists proc_delete_movie_director
