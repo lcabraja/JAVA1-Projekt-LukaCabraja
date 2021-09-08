@@ -195,29 +195,45 @@ begin
              inner join Roles R2 on R2.IDRole = U.RoleID
     where Username like @Search
 end
-    -----------------------------------------------------
+go
+-----------------------------------------------------
 -- CRUD movie
 -----------------------------------------------------
-    drop procedure if exists proc_create_movie
+drop procedure if exists proc_create_movie
 go
 create proc proc_create_movie @Title nvarchar(256),
                               @OriginalTitle nvarchar(256),
                               @DatePublished datetimeoffset,
                               @HTMLDescription nvarchar(4000),
                               @Length int,
-                              @Genre int,
+                              @Genre nvarchar(32),
                               @PosterFilePath nvarchar(512),
                               @TrailerLink nvarchar(128),
                               @Link nvarchar(128),
                               @GUID nvarchar(128),
-                              @StartsPlaying date
+                              @StartsPlaying date,
+                              @MovieID int output
 as
 begin
+    declare @GenreID int
+    if not exists(select IDGenre from Genres where Title = @Genre)
+        begin
+            insert into Genres values (@Genre)
+            set @GenreID = scope_identity()
+        end
+    else
+        begin
+            set @genreId = (select top 1 IDGenre from Genres where Title = @Genre)
+        end
     insert into Movie
-    values (@Title, @OriginalTitle, @DatePublished, @HTMLDescription, @Length, @Genre, @PosterFilePath, @TrailerLink,
+    values (@Title, @OriginalTitle, @DatePublished, @HTMLDescription, @Length, @GenreID, @PosterFilePath, @TrailerLink,
             @Link, @GUID, @StartsPlaying)
-    select scope_identity()
+    set @MovieID = scope_identity()
 end
+declare @movieid int
+    exec proc_create_movie 'teeee', 'sssst', '12-10-25 12:32:10 +01:00', '<div>as</div>', 98, 'thriller', null, null,
+         null, null, '12-10-25', @movieid
+select @movieid
 go
 drop procedure if exists proc_read_movie
 go
@@ -293,13 +309,15 @@ go
 -----------------------------------------------------
 drop procedure if exists proc_create_actor
 go
-create proc proc_create_actor @Name nvarchar(128)
+create proc proc_create_actor @Name nvarchar(128),
+                              @ActorID int output
 as
 begin
     insert into Persons
     values (@Name)
+    set @ActorID = scope_identity()
     insert into Actors (PersonID)
-    values (scope_identity())
+    values (@ActorID)
 end
 go
 drop procedure if exists proc_read_actor
