@@ -18,7 +18,6 @@ import java.net.HttpURLConnection;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -31,7 +30,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Characters;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
-import microsoft.sql.DateTimeOffset;
 
 /**
  *
@@ -77,16 +75,6 @@ public class MovieParser {
                                 case TITLE:
                                     if (movie != null && !data.isEmpty()) {
                                         movie.setTitle(data);
-                                    }
-                                    break;
-                                case PUB_DATE:
-                                    if (movie != null && !data.isEmpty()) {
-                                        OffsetDateTime publishedDate = OffsetDateTime.parse(data, Movie.DATE_FROM_PARSER);
-                                        DateTimeOffset dto = DateTimeOffset.valueOf(
-                                                Timestamp.from(publishedDate.toInstant()),
-                                                publishedDate.getOffset().getTotalSeconds() / 60
-                                        );
-                                        movie.setDatePublished(dto);
                                     }
                                     break;
                                 case DESCRIPTION:
@@ -208,7 +196,6 @@ public class MovieParser {
 
         ITEM("item"),
         TITLE("title"),
-        PUB_DATE("pubDate"),
         DESCRIPTION("description"),
         ORIGINAL_TITLE("orignaziv"),
         DIRECTOR("redatelj"),

@@ -15,6 +15,7 @@ import java.io.File;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +37,6 @@ public class SqlRepository implements Repository {
     private static final String ID_MOVIE = "IDMovie";
     private static final String TITLE = "Title";
     private static final String ORIGINAL_TITLE = "OriginalTitle";
-    private static final String DATE_PUBLISHED = "DatePublished";
     private static final String HTML_DESCRIPTION = "HTMLDescription";
     private static final String LENGTH = "Length";
     private static final String GENRE = "Genre";
@@ -52,7 +52,7 @@ public class SqlRepository implements Repository {
     private static final String ROLE = "Role";
     private static final String ACCESS_LEVEL = "AccessLevel";
 
-    private static final String PROC_CREATE_MOVIE = "{ CALL proc_create_movie  (?,?,?,?,?,?,?,?,?,?,?,?) }";
+    private static final String PROC_CREATE_MOVIE = "{ CALL proc_create_movie  (?,?,?,?,?,?,?,?,?,?,?) }";
     private static final String PROC_READ_MOVIE = "{ CALL proc_read_movie  (?) }";
     private static final String PROC_READ_MOVIES = "{ CALL proc_read_movies }";
     private static final String PROC_UPDATE_MOVIE = "{ CALL proc_update_movie  (?,?,?,?,?,?,?,?,?,?,?,?) }";
@@ -64,7 +64,7 @@ public class SqlRepository implements Repository {
     private static final String PROC_UPDATE_ACTOR = "{ CALL proc_update_actor  (?,?) }";
     private static final String PROC_DELETE_ACTOR = "{ CALL proc_delete_actor  (?) }";
 
-    private static final String PROC_CREATE_DIRECTOR = "{ CALL proc_create_director  (?) }";
+    private static final String PROC_CREATE_DIRECTOR = "{ CALL proc_create_director  (?,?) }";
     private static final String PROC_READ_DIRECTOR = "{ CALL proc_read_director  (?) }";
     private static final String PROC_READ_DIRECTORS = "{ CALL proc_read_directors  (?) }";
     private static final String PROC_UPDATE_DIRECTOR = "{ CALL proc_update_director  (?,?) }";
@@ -101,6 +101,19 @@ public class SqlRepository implements Repository {
         DataSource dataSource = DataSourceSingleton.getInstance();
         try (Connection con = dataSource.getConnection();
                 CallableStatement stmt = con.prepareCall(PROC_CREATE_ACTOR)) {
+
+            for (Actor actor : actors) {
+                stmt.setString(1, actor.getFullName());
+                stmt.registerOutParameter(2, Types.INTEGER);
+
+                stmt.executeUpdate();
+            }
+        }
+    }
+
+    public void createActors(List<Actor> actors, Connection con) throws Exception {
+        DataSource dataSource = DataSourceSingleton.getInstance();
+        try (CallableStatement stmt = con.prepareCall(PROC_CREATE_ACTOR)) {
 
             for (Actor actor : actors) {
                 stmt.setString(1, actor.getFullName());
@@ -186,6 +199,19 @@ public class SqlRepository implements Repository {
             stmt.registerOutParameter(2, Types.INTEGER);
             stmt.executeUpdate();
             return stmt.getInt(2);
+        }
+    }
+
+    public void createDirectors(List<Director> directors, Connection con) throws Exception {
+        DataSource dataSource = DataSourceSingleton.getInstance();
+        try (CallableStatement stmt = con.prepareCall(PROC_CREATE_DIRECTOR)) {
+
+            for (Director director : directors) {
+                stmt.setString(1, director.getFullName());
+                stmt.registerOutParameter(2, Types.INTEGER);
+
+                stmt.executeUpdate();
+            }
         }
     }
 
@@ -280,16 +306,15 @@ public class SqlRepository implements Repository {
 
             stmt.setString(1, movie.getTitle());
             stmt.setString(2, movie.getOriginalTitle());
-            stmt.setString(3, movie.getDatePublished().toString());
-            stmt.setString(4, movie.getHTMLDescription());
-            stmt.setInt(5, movie.getLength());
-            stmt.setString(6, movie.getGenre());
-            stmt.setString(7, movie.getPosterFilePath());
-            stmt.setString(8, movie.getTrailerLink());
-            stmt.setString(9, movie.getLink());
-            stmt.setString(10, movie.getGUID());
-            stmt.setDate(11, movie.getStartsPlaying());
-            stmt.registerOutParameter(12, Types.INTEGER);
+            stmt.setString(3, movie.getHTMLDescription());
+            stmt.setInt(4, movie.getLength());
+            stmt.setString(5, movie.getGenre());
+            stmt.setString(6, movie.getPosterFilePath());
+            stmt.setString(7, movie.getTrailerLink());
+            stmt.setString(8, movie.getLink());
+            stmt.setString(9, movie.getGUID());
+            stmt.setDate(10, movie.getStartsPlaying());
+            stmt.registerOutParameter(11, Types.INTEGER);
 
             stmt.executeUpdate();
             return stmt.getInt(12);
@@ -304,12 +329,11 @@ public class SqlRepository implements Repository {
 
             for (Movie movie : movies) {
 
-                createActors(movie.getActors());
-                createDirectors(movie.getDirectors());
+                createActors(movie.getActors(), con);
+                createDirectors(movie.getDirectors(), con);
 
                 stmt.setString(1, movie.getTitle());
                 stmt.setString(2, movie.getOriginalTitle());
-                stmt.setString(3, movie.getDatePublished().toString());
                 stmt.setString(4, movie.getHTMLDescription());
                 stmt.setInt(5, movie.getLength());
                 stmt.setString(6, movie.getGenre());
@@ -341,7 +365,6 @@ public class SqlRepository implements Repository {
             stmt.setInt(1, id);
             stmt.setString(2, data.getTitle());
             stmt.setString(3, data.getOriginalTitle());
-            stmt.setString(4, data.getDatePublished().toString());
             stmt.setString(5, data.getHTMLDescription());
             stmt.setInt(6, data.getLength());
             stmt.setString(7, data.getGenre());
@@ -384,7 +407,6 @@ public class SqlRepository implements Repository {
                             rs.getInt(ID_MOVIE),
                             rs.getString(TITLE),
                             rs.getString(ORIGINAL_TITLE),
-                            DateTimeOffsetParser.parse(rs.getString(DATE_PUBLISHED)),
                             rs.getString(HTML_DESCRIPTION),
                             rs.getInt(LENGTH),
                             rs.getString(GENRE),
@@ -394,10 +416,6 @@ public class SqlRepository implements Repository {
                             rs.getString(GUID),
                             rs.getDate(STARTS_PLAYING));
 
-                    List<Actor> selectMovieActors = selectMovieActors(newMovie.getIDMovie());
-                    newMovie.setActors(selectMovieActors);
-                    List<Director> selectMovieDirectors = selectMovieDirectors(newMovie.getIDMovie());
-                    newMovie.setDirectors(selectMovieDirectors);
                     return Optional.of(newMovie);
                 }
             }
@@ -418,7 +436,6 @@ public class SqlRepository implements Repository {
                         rs.getInt(ID_MOVIE),
                         rs.getString(TITLE),
                         rs.getString(ORIGINAL_TITLE),
-                        DateTimeOffsetParser.parse(rs.getString(DATE_PUBLISHED)),
                         rs.getString(HTML_DESCRIPTION),
                         rs.getInt(LENGTH),
                         rs.getString(GENRE),
@@ -428,10 +445,6 @@ public class SqlRepository implements Repository {
                         rs.getString(GUID),
                         rs.getDate(STARTS_PLAYING));
 
-                List<Actor> selectMovieActors = selectMovieActors(newMovie.getIDMovie());
-                newMovie.setActors(selectMovieActors);
-                List<Director> selectMovieDirectors = selectMovieDirectors(newMovie.getIDMovie());
-                newMovie.setDirectors(selectMovieDirectors);
                 movies.add(newMovie);
             }
         }
@@ -521,18 +534,20 @@ public class SqlRepository implements Repository {
         List<Actor> actors = new ArrayList<>();
         DataSource dataSource = DataSourceSingleton.getInstance();
         try (Connection con = dataSource.getConnection();
-                CallableStatement stmt = con.prepareCall(PROC_READ_MOVIE_ACTOR);
-                ResultSet rs = stmt.executeQuery()) {
+                CallableStatement stmt = con.prepareCall(PROC_READ_MOVIE_ACTOR)) {
 
-            while (rs.next()) {
-                actors.add(new Actor(
-                        rs.getInt(ID_ACTOR),
-                        rs.getInt(PERSON_ID),
-                        rs.getString(FULL_NAME),
-                        rs.getString(ALTERNATE_NAME)));
+            stmt.setInt(1, MovieID);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    actors.add(new Actor(
+                            rs.getInt(ID_ACTOR),
+                            rs.getInt(PERSON_ID),
+                            rs.getString(FULL_NAME),
+                            rs.getString(ALTERNATE_NAME)));
+                }
             }
+            return actors;
         }
-        return actors;
     }
 
     @Override
@@ -581,18 +596,20 @@ public class SqlRepository implements Repository {
         List<Director> directors = new ArrayList<>();
         DataSource dataSource = DataSourceSingleton.getInstance();
         try (Connection con = dataSource.getConnection();
-                CallableStatement stmt = con.prepareCall(PROC_READ_MOVIE_DIRECTOR);
-                ResultSet rs = stmt.executeQuery()) {
+                CallableStatement stmt = con.prepareCall(PROC_READ_MOVIE_DIRECTOR)) {
 
-            while (rs.next()) {
-                directors.add(new Director(
-                        rs.getInt(ID_DIRECTOR),
-                        rs.getInt(PERSON_ID),
-                        rs.getString(FULL_NAME),
-                        rs.getString(ALTERNATE_NAME)));
+            stmt.setInt(1, MovieID);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    directors.add(new Director(
+                            rs.getInt(ID_DIRECTOR),
+                            rs.getInt(PERSON_ID),
+                            rs.getString(FULL_NAME),
+                            rs.getString(ALTERNATE_NAME)));
+                }
             }
+            return directors;
         }
-        return directors;
     }
 
     @Override

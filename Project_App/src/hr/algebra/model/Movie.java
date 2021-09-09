@@ -10,7 +10,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import microsoft.sql.DateTimeOffset;
 
 /**
  *
@@ -18,12 +17,9 @@ import microsoft.sql.DateTimeOffset;
  */
 public class Movie {
 
-    public static final DateTimeFormatter DATE_FROM_PARSER = DateTimeFormatter.RFC_1123_DATE_TIME;
-
     private int IDMovie;
     private String Title;
     private String OriginalTitle;
-    private DateTimeOffset DatePublished;
     private String HTMLDescription;
     private int Length;
     private String Genre;
@@ -40,11 +36,10 @@ public class Movie {
         Directors = new ArrayList<>();
     }
 
-    public Movie(String Title, String OriginalTitle, DateTimeOffset DatePublished, String HTMLDescription, int Length, String Genre, String PosterFilePath, String TrailerLink, String Link, String GUID, Date StartsPlaying) {
+    public Movie(String Title, String OriginalTitle, String HTMLDescription, int Length, String Genre, String PosterFilePath, String TrailerLink, String Link, String GUID, Date StartsPlaying) {
         this();
         this.Title = Title;
         this.OriginalTitle = OriginalTitle;
-        this.DatePublished = DatePublished;
         this.HTMLDescription = HTMLDescription;
         this.Length = Length;
         this.Genre = Genre;
@@ -55,8 +50,8 @@ public class Movie {
         this.StartsPlaying = StartsPlaying;
     }
 
-    public Movie(int IDMovie, String Title, String OriginalTitle, DateTimeOffset DatePublished, String HTMLDescription, int Length, String Genre, String PosterFilePath, String TrailerLink, String Link, String GUID, Date StartsPlaying) {
-        this(Title, OriginalTitle, DatePublished, HTMLDescription, Length, Genre, PosterFilePath, TrailerLink, Link, GUID, StartsPlaying);
+    public Movie(int IDMovie, String Title, String OriginalTitle, String HTMLDescription, int Length, String Genre, String PosterFilePath, String TrailerLink, String Link, String GUID, Date StartsPlaying) {
+        this(Title, OriginalTitle, HTMLDescription, Length, Genre, PosterFilePath, TrailerLink, Link, GUID, StartsPlaying);
         this.IDMovie = IDMovie;
     }
 
@@ -86,10 +81,6 @@ public class Movie {
 
     public String getOriginalTitle() {
         return OriginalTitle;
-    }
-
-    public DateTimeOffset getDatePublished() {
-        return DatePublished;
     }
 
     public String getHTMLDescription() {
@@ -130,10 +121,6 @@ public class Movie {
 
     public void setOriginalTitle(String OriginalTitle) {
         this.OriginalTitle = OriginalTitle;
-    }
-
-    public void setDatePublished(DateTimeOffset DatePublished) {
-        this.DatePublished = DatePublished;
     }
 
     public void setHTMLDescription(String HTMLDescription) {

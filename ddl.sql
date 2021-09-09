@@ -105,7 +105,6 @@ create table Movie
             primary key nonclustered,
     Title           nvarchar(256) not null,
     OriginalTitle   nvarchar(256),
-    DatePublished   datetimeoffset,
     HTMLDescription nvarchar(4000),
     Length          int,
     Genre           int,
@@ -215,7 +214,6 @@ drop procedure if exists proc_create_movie
 go
 create proc proc_create_movie @Title nvarchar(256),
                               @OriginalTitle nvarchar(256),
-                              @DatePublished datetimeoffset,
                               @HTMLDescription nvarchar(4000),
                               @Length int,
                               @Genre nvarchar(32),
@@ -238,14 +236,10 @@ begin
             set @genreId = (select top 1 IDGenre from Genres where Title = @Genre)
         end
     insert into Movie
-    values (@Title, @OriginalTitle, @DatePublished, @HTMLDescription, @Length, @GenreID, @PosterFilePath, @TrailerLink,
+    values (@Title, @OriginalTitle, @HTMLDescription, @Length, @GenreID, @PosterFilePath, @TrailerLink,
             @Link, @GUID, @StartsPlaying)
     set @MovieID = scope_identity()
 end
-declare @movieid int
-    exec proc_create_movie 'teeee', 'sssst', '12-10-25 12:32:10 +01:00', '<div>as</div>', 98, 'thriller', null, null,
-         null, null, '12-10-25', @movieid
-select @movieid
 go
 drop procedure if exists proc_read_movie
 go
@@ -255,7 +249,6 @@ begin
     select IDMovie,
            M.Title,
            OriginalTitle,
-           DatePublished,
            HTMLDescription,
            Length,
            G.Title  as Genre,
@@ -277,7 +270,6 @@ begin
         select IDMovie,
            M.Title,
            OriginalTitle,
-           DatePublished,
            HTMLDescription,
            Length,
            G.Title as Genre,
@@ -295,7 +287,6 @@ go
 create proc proc_update_movie @IDMovie int,
                               @Title nvarchar(256),
                               @OriginalTitle nvarchar(256),
-                              @DatePublished datetimeoffset,
                               @HTMLDescription nvarchar(4000),
                               @Length int,
                               @Genre int,
@@ -309,7 +300,6 @@ begin
     update Movie
     set Title           = @Title,
         OriginalTitle   = @OriginalTitle,
-        DatePublished   = @DatePublished,
         HTMLDescription = @HTMLDescription,
         Length          = @Length,
         Genre           = @Genre,
@@ -340,9 +330,9 @@ as
 begin
     insert into Persons
     values (@Name)
-    set @ActorID = scope_identity()
     insert into Actors (PersonID)
-    values (@ActorID)
+    values (scope_identity())
+    set @ActorID = scope_identity()
 end
 go
 drop procedure if exists proc_read_actor
@@ -394,13 +384,15 @@ go
 -----------------------------------------------------
 drop procedure if exists proc_create_director
 go
-create proc proc_create_director @Name nvarchar(128)
+create proc proc_create_director @Name nvarchar(128),
+                                 @DirectorID int output
 as
 begin
     insert into Persons
     values (@Name)
     insert into Directors (PersonID)
     values (scope_identity())
+    set @DirectorID = scope_identity()
 end
 go
 drop procedure if exists proc_read_director
