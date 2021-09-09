@@ -51,4 +51,5 @@ public interface Repository {
     void deleteMovieDirector(int MovieID, int DirectorID) throws Exception;
     List<Director> selectMovieDirectors(int MovieID) throws Exception;
 
+    void clearAllData(User user) throws Exception;
 }

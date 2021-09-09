@@ -10,6 +10,8 @@ import hr.algebra.model.Actor;
 import hr.algebra.model.Director;
 import hr.algebra.model.Movie;
 import hr.algebra.model.User;
+import hr.algebra.utils.FileUtils;
+import java.io.File;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -78,6 +80,8 @@ public class SqlRepository implements Repository {
     private static final String PROC_CREATE_MOVIE_DIRECTOR = "{ CALL proc_create_movie_director  (?,?) }";
     private static final String PROC_READ_MOVIE_DIRECTOR = "{ CALL proc_read_movie_director  (?) }";
     private static final String PROC_DELETE_MOVIE_DIRECTOR = "{ CALL proc_delete_movie_director  (?,?) }";
+
+    private static final String PROC_CLEAR_ALL_DATA = "{ CALL proc_clear_all_data }";
 
     @Override
     public int createActor(Actor actor) throws Exception {
@@ -271,6 +275,9 @@ public class SqlRepository implements Repository {
         try (Connection con = dataSource.getConnection();
                 CallableStatement stmt = con.prepareCall(PROC_CREATE_MOVIE)) {
 
+            createActors(movie.getActors());
+            createDirectors(movie.getDirectors());
+
             stmt.setString(1, movie.getTitle());
             stmt.setString(2, movie.getOriginalTitle());
             stmt.setString(3, movie.getDatePublished().toString());
@@ -296,6 +303,10 @@ public class SqlRepository implements Repository {
                 CallableStatement stmt = con.prepareCall(PROC_CREATE_MOVIE)) {
 
             for (Movie movie : movies) {
+
+                createActors(movie.getActors());
+                createDirectors(movie.getDirectors());
+
                 stmt.setString(1, movie.getTitle());
                 stmt.setString(2, movie.getOriginalTitle());
                 stmt.setString(3, movie.getDatePublished().toString());
@@ -320,6 +331,13 @@ public class SqlRepository implements Repository {
         try (Connection con = dataSource.getConnection();
                 CallableStatement stmt = con.prepareCall(PROC_UPDATE_MOVIE)) {
 
+            for (Actor actor : data.getActors()) {
+                updateActor(actor.getIDActor(), actor);
+            }
+            for (Director director : data.getDirectors()) {
+                updateDirector(director.getIDDirector(), director);
+            }
+
             stmt.setInt(1, id);
             stmt.setString(2, data.getTitle());
             stmt.setString(3, data.getOriginalTitle());
@@ -340,12 +358,16 @@ public class SqlRepository implements Repository {
     @Override
     public void deleteMovie(int id) throws Exception {
         DataSource dataSource = DataSourceSingleton.getInstance();
-        try (Connection con = dataSource.getConnection();
-                CallableStatement stmt = con.prepareCall(PROC_DELETE_MOVIE)) {
+        Optional<Movie> potentialMovie = selectMovie(id);
+        if (potentialMovie.isPresent()) {
+            File poster = new File(potentialMovie.get().getPosterFilePath());
+            poster.delete();
+            try (Connection con = dataSource.getConnection();
+                    CallableStatement stmt = con.prepareCall(PROC_DELETE_MOVIE)) {
+                stmt.setInt(1, id);
 
-            stmt.setInt(1, id);
-
-            stmt.executeUpdate();
+                stmt.executeUpdate();
+            }
         }
     }
 
@@ -358,7 +380,7 @@ public class SqlRepository implements Repository {
             stmt.setInt(1, id);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    return Optional.of(new Movie(
+                    Movie newMovie = new Movie(
                             rs.getInt(ID_MOVIE),
                             rs.getString(TITLE),
                             rs.getString(ORIGINAL_TITLE),
@@ -370,8 +392,13 @@ public class SqlRepository implements Repository {
                             rs.getString(TRAILER_LINK),
                             rs.getString(LINK),
                             rs.getString(GUID),
-                            rs.getDate(STARTS_PLAYING))
-                    );
+                            rs.getDate(STARTS_PLAYING));
+
+                    List<Actor> selectMovieActors = selectMovieActors(newMovie.getIDMovie());
+                    newMovie.setActors(selectMovieActors);
+                    List<Director> selectMovieDirectors = selectMovieDirectors(newMovie.getIDMovie());
+                    newMovie.setDirectors(selectMovieDirectors);
+                    return Optional.of(newMovie);
                 }
             }
         }
@@ -387,7 +414,7 @@ public class SqlRepository implements Repository {
                 ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
-                movies.add(new Movie(
+                Movie newMovie = new Movie(
                         rs.getInt(ID_MOVIE),
                         rs.getString(TITLE),
                         rs.getString(ORIGINAL_TITLE),
@@ -399,7 +426,13 @@ public class SqlRepository implements Repository {
                         rs.getString(TRAILER_LINK),
                         rs.getString(LINK),
                         rs.getString(GUID),
-                        rs.getDate(STARTS_PLAYING)));
+                        rs.getDate(STARTS_PLAYING));
+
+                List<Actor> selectMovieActors = selectMovieActors(newMovie.getIDMovie());
+                newMovie.setActors(selectMovieActors);
+                List<Director> selectMovieDirectors = selectMovieDirectors(newMovie.getIDMovie());
+                newMovie.setDirectors(selectMovieDirectors);
+                movies.add(newMovie);
             }
         }
         return movies;
@@ -560,5 +593,18 @@ public class SqlRepository implements Repository {
             }
         }
         return directors;
+    }
+
+    @Override
+    public void clearAllData(User user) throws Exception {
+        if (user.getAccessLevel() == 100) {
+            FileUtils.recursivelyDeleteDirectory(new File("assets"), true);
+
+            DataSource dataSource = DataSourceSingleton.getInstance();
+            try (Connection con = dataSource.getConnection();
+                    CallableStatement stmt = con.prepareCall(PROC_CLEAR_ALL_DATA)) {
+                stmt.executeUpdate();
+            }
+        }
     }
 }
