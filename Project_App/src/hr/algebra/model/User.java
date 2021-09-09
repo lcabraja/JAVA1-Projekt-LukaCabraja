@@ -12,15 +12,19 @@ package hr.algebra.model;
 public class User {
 
     private int IDUser;
-    private String Username;
-    private String PasswordHash;
+    private final String Username;
+    private final String PasswordHash;
     private String Role;
     private int AccessLevel;
 
-    public User(int IDUser, String Username, String PasswordHash, String Role, int AccessLevel) {
-        this.IDUser = IDUser;
+    public User(String Username, String PasswordHash) {
         this.Username = Username;
         this.PasswordHash = PasswordHash;
+    }
+
+    public User(int IDUser, String Username, String PasswordHash, String Role, int AccessLevel) {
+        this(Username, PasswordHash);
+        this.IDUser = IDUser;
         this.Role = Role;
         this.AccessLevel = AccessLevel;
     }
@@ -44,6 +48,5 @@ public class User {
     public int getAccessLevel() {
         return AccessLevel;
     }
-    
-    
+
 }
