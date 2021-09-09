@@ -55,7 +55,7 @@ public class SqlRepository implements Repository {
     private static final String PROC_CREATE_MOVIE = "{ CALL proc_create_movie  (?,?,?,?,?,?,?,?,?,?,?) }";
     private static final String PROC_READ_MOVIE = "{ CALL proc_read_movie  (?) }";
     private static final String PROC_READ_MOVIES = "{ CALL proc_read_movies }";
-    private static final String PROC_UPDATE_MOVIE = "{ CALL proc_update_movie  (?,?,?,?,?,?,?,?,?,?,?,?) }";
+    private static final String PROC_UPDATE_MOVIE = "{ CALL proc_update_movie  (?,?,?,?,?,?,?,?,?,?,?) }";
     private static final String PROC_DELETE_MOVIE = "{ CALL proc_delete_movie (?) }";
 
     private static final String PROC_CREATE_ACTOR = "{ CALL proc_create_actor  (?,?) }";
@@ -317,7 +317,7 @@ public class SqlRepository implements Repository {
             stmt.registerOutParameter(11, Types.INTEGER);
 
             stmt.executeUpdate();
-            return stmt.getInt(12);
+            return stmt.getInt(11);
         }
     }
 
@@ -334,15 +334,15 @@ public class SqlRepository implements Repository {
 
                 stmt.setString(1, movie.getTitle());
                 stmt.setString(2, movie.getOriginalTitle());
-                stmt.setString(4, movie.getHTMLDescription());
-                stmt.setInt(5, movie.getLength());
-                stmt.setString(6, movie.getGenre());
-                stmt.setString(7, movie.getPosterFilePath());
-                stmt.setString(8, movie.getTrailerLink());
-                stmt.setString(9, movie.getLink());
-                stmt.setString(10, movie.getGUID());
-                stmt.setDate(11, movie.getStartsPlaying());
-                stmt.registerOutParameter(12, Types.INTEGER);
+                stmt.setString(3, movie.getHTMLDescription());
+                stmt.setInt(4, movie.getLength());
+                stmt.setString(5, movie.getGenre());
+                stmt.setString(6, movie.getPosterFilePath());
+                stmt.setString(7, movie.getTrailerLink());
+                stmt.setString(8, movie.getLink());
+                stmt.setString(9, movie.getGUID());
+                stmt.setDate(10, movie.getStartsPlaying());
+                stmt.registerOutParameter(11, Types.INTEGER);
 
                 stmt.executeUpdate();
             }
@@ -365,14 +365,14 @@ public class SqlRepository implements Repository {
             stmt.setInt(1, id);
             stmt.setString(2, data.getTitle());
             stmt.setString(3, data.getOriginalTitle());
-            stmt.setString(5, data.getHTMLDescription());
-            stmt.setInt(6, data.getLength());
-            stmt.setString(7, data.getGenre());
-            stmt.setString(8, data.getPosterFilePath());
-            stmt.setString(9, data.getTrailerLink());
-            stmt.setString(10, data.getLink());
-            stmt.setString(11, data.getGUID());
-            stmt.setDate(12, data.getStartsPlaying());
+            stmt.setString(4, data.getHTMLDescription());
+            stmt.setInt(5, data.getLength());
+            stmt.setString(6, data.getGenre());
+            stmt.setString(7, data.getPosterFilePath());
+            stmt.setString(8, data.getTrailerLink());
+            stmt.setString(9, data.getLink());
+            stmt.setString(10, data.getGUID());
+            stmt.setDate(11, data.getStartsPlaying());
 
             stmt.executeUpdate();
         }
@@ -615,7 +615,7 @@ public class SqlRepository implements Repository {
     @Override
     public void clearAllData(User user) throws Exception {
         if (user.getAccessLevel() == 100) {
-            FileUtils.recursivelyDeleteDirectory(new File("assets"), true);
+            FileUtils.recursivelyDeleteDirectory(new File("data"), true);
 
             DataSource dataSource = DataSourceSingleton.getInstance();
             try (Connection con = dataSource.getConnection();
