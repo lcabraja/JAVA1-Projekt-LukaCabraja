@@ -12,6 +12,7 @@ import hr.algebra.login.Login;
 import hr.algebra.model.User;
 import hr.algebra.user.Crudable;
 import hr.algebra.user.MovieCRUD;
+import hr.algebra.user.PersonCRUD;
 import hr.algebra.utils.MessageUtils;
 import java.awt.event.ActionEvent;
 import java.util.logging.Level;
@@ -40,6 +41,8 @@ public class Main extends javax.swing.JFrame {
     private CinestarDownload cinestarDownload;
     private Login loginForm;
     private MovieCRUD movieCrud;
+    private PersonCRUD actorCrud;
+    private PersonCRUD directorCrud;
     private Crudable selectedTab;
 
     /**
@@ -54,6 +57,7 @@ public class Main extends javax.swing.JFrame {
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
+        jCheckBoxMenuItem1 = new javax.swing.JCheckBoxMenuItem();
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenuItem6 = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
@@ -61,15 +65,19 @@ public class Main extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(800, 600));
         setPreferredSize(new java.awt.Dimension(800, 600));
-        addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowOpened(java.awt.event.WindowEvent evt) {
-                formWindowOpened(evt);
-            }
-        });
 
         jMenu1.setText("File");
 
-        jMenuItem1.setText("jMenuItem1");
+        jCheckBoxMenuItem1.setSelected(true);
+        jCheckBoxMenuItem1.setText("Fidget Toggler");
+        jMenu1.add(jCheckBoxMenuItem1);
+
+        jMenuItem1.setText("Download XML");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
         jMenu1.add(jMenuItem1);
 
         jMenuItem6.setText("Exit");
@@ -106,9 +114,9 @@ public class Main extends javax.swing.JFrame {
         System.exit(0);
     }//GEN-LAST:event_jMenuItem6ActionPerformed
 
-    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
-
-    }//GEN-LAST:event_formWindowOpened
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -142,6 +150,7 @@ public class Main extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItem1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
@@ -237,9 +246,9 @@ public class Main extends javax.swing.JFrame {
     private void setUserMenu(String itemName) {
         clearMenuBar(2);
         JMenu crudMenu = new JMenu("CRUD");
-        JMenuItem createItem = new JMenuItem("Create" + itemName);
-        JMenuItem updateItem = new JMenuItem("Update" + itemName);
-        JMenuItem deleteItem = new JMenuItem("Delete" + itemName);
+        JMenuItem createItem = new JMenuItem("Create " + itemName);
+        JMenuItem updateItem = new JMenuItem("Update " + itemName);
+        JMenuItem deleteItem = new JMenuItem("Delete " + itemName);
 
         createItem.addActionListener((ActionEvent e) -> {
             selectedTab.CreateAction();
@@ -266,6 +275,7 @@ public class Main extends javax.swing.JFrame {
             setAdminTabs();
             setAdminMenu();
         } else {
+            selectedTab = movieCrud;
             setUserTabs();
             setUserMenu("movie");
         }
