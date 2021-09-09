@@ -142,10 +142,10 @@ public class SqlRepository implements Repository {
 
                 if (rs.next()) {
                     return Optional.of(new Actor(
-                            rs.getInt("IDActor"),
-                            rs.getInt("PersonID"),
-                            rs.getString("FullName"),
-                            rs.getString("AlternateName")));
+                            rs.getInt(ID_ACTOR),
+                            rs.getInt(PERSON_ID),
+                            rs.getString(FULL_NAME),
+                            rs.getString(ALTERNATE_NAME)));
                 }
             }
         }
@@ -162,10 +162,10 @@ public class SqlRepository implements Repository {
 
             while (rs.next()) {
                 actors.add(new Actor(
-                        rs.getInt("IDActor"),
-                        rs.getInt("PersonID"),
-                        rs.getString("FullName"),
-                        rs.getString("AlternateName")));
+                        rs.getInt(ID_ACTOR),
+                        rs.getInt(PERSON_ID),
+                        rs.getString(FULL_NAME),
+                        rs.getString(ALTERNATE_NAME)));
             }
         }
         return actors;
@@ -235,10 +235,10 @@ public class SqlRepository implements Repository {
 
                 if (rs.next()) {
                     return Optional.of(new Director(
-                            rs.getInt("IDDirector"),
-                            rs.getInt("PersonID"),
-                            rs.getString("FullName"),
-                            rs.getString("AlternateName")));
+                            rs.getInt(ID_DIRECTOR),
+                            rs.getInt(PERSON_ID),
+                            rs.getString(FULL_NAME),
+                            rs.getString(ALTERNATE_NAME)));
                 }
             }
         }
@@ -255,10 +255,10 @@ public class SqlRepository implements Repository {
 
             while (rs.next()) {
                 directors.add(new Director(
-                        rs.getInt("IDDirector"),
-                        rs.getInt("PersonID"),
-                        rs.getString("FullName"),
-                        rs.getString("AlternateName")));
+                        rs.getInt(ID_DIRECTOR),
+                        rs.getInt(PERSON_ID),
+                        rs.getString(FULL_NAME),
+                        rs.getString(ALTERNATE_NAME)));
             }
         }
         return directors;
@@ -358,18 +358,18 @@ public class SqlRepository implements Repository {
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return Optional.of(new Movie(
-                            rs.getInt("IDMovie"),
-                            rs.getString("Title"),
-                            rs.getString("OriginalTitle"),
-                            DateTimeOffsetParser.parse(rs.getString("DatePublished")),
-                            rs.getString("HTMLDescription"),
-                            rs.getInt("Length"),
-                            rs.getString("Genre"),
-                            rs.getString("PosterFilePath"),
-                            rs.getString("TrailerLink"),
-                            rs.getString("Link"),
-                            rs.getString("GUID"),
-                            rs.getDate("StartsPlaying"))
+                            rs.getInt(ID_MOVIE),
+                            rs.getString(TITLE),
+                            rs.getString(ORIGINAL_TITLE),
+                            DateTimeOffsetParser.parse(rs.getString(DATE_PUBLISHED)),
+                            rs.getString(HTML_DESCRIPTION),
+                            rs.getInt(LENGTH),
+                            rs.getString(GENRE),
+                            rs.getString(POSTER_FILE_PATH),
+                            rs.getString(TRAILER_LINK),
+                            rs.getString(LINK),
+                            rs.getString(GUID),
+                            rs.getDate(STARTS_PLAYING))
                     );
                 }
             }
@@ -387,18 +387,18 @@ public class SqlRepository implements Repository {
 
             while (rs.next()) {
                 movies.add(new Movie(
-                        rs.getInt("IDMovie"),
-                        rs.getString("Title"),
-                        rs.getString("OriginalTitle"),
-                        DateTimeOffsetParser.parse(rs.getString("DatePublished")),
-                        rs.getString("HTMLDescription"),
-                        rs.getInt("Length"),
-                        rs.getString("Genre"),
-                        rs.getString("PosterFilePath"),
-                        rs.getString("TrailerLink"),
-                        rs.getString("Link"),
-                        rs.getString("GUID"),
-                        rs.getDate("StartsPlaying")));
+                        rs.getInt(ID_MOVIE),
+                        rs.getString(TITLE),
+                        rs.getString(ORIGINAL_TITLE),
+                        DateTimeOffsetParser.parse(rs.getString(DATE_PUBLISHED)),
+                        rs.getString(HTML_DESCRIPTION),
+                        rs.getInt(LENGTH),
+                        rs.getString(GENRE),
+                        rs.getString(POSTER_FILE_PATH),
+                        rs.getString(TRAILER_LINK),
+                        rs.getString(LINK),
+                        rs.getString(GUID),
+                        rs.getDate(STARTS_PLAYING)));
             }
         }
         return movies;
@@ -414,11 +414,11 @@ public class SqlRepository implements Repository {
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return Optional.of(new User(
-                            rs.getInt("IDUser"),
-                            rs.getString("Username"),
-                            rs.getString("PasswordHash"),
-                            rs.getString("Role"),
-                            rs.getInt("AccessLevel"))
+                            rs.getInt(ID_USER),
+                            rs.getString(USERNAME),
+                            rs.getString(PASSWORD_HASH),
+                            rs.getString(ROLE),
+                            rs.getInt(ACCESS_LEVEL))
                     );
                 }
             }
@@ -477,10 +477,10 @@ public class SqlRepository implements Repository {
 
             while (rs.next()) {
                 actors.add(new Actor(
-                        rs.getInt("IDActor"),
-                        rs.getInt("PersonID"),
-                        rs.getString("FullName"),
-                        rs.getString("AlternateName")));
+                        rs.getInt(ID_ACTOR),
+                        rs.getInt(PERSON_ID),
+                        rs.getString(FULL_NAME),
+                        rs.getString(ALTERNATE_NAME)));
             }
         }
         return actors;
