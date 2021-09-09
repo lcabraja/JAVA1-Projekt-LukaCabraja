@@ -25,6 +25,6 @@ hs_err_pid*
 /Project_App/build/
 /Utilities/build/
 
-*/assets/*.png
-*/assets/*.jpg
-*/assets/*.jpeg
+*/data/*.png
+*/data/*.jpg
+*/data/*.jpeg
