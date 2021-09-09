@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.sql.Date;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +40,7 @@ public class MovieParser {
     private static final String TRAILER_PREFIX = "https://slike.blitz-cinestar.hr/Trejleri/";
     public static final String TIMESTAMP_PATTERN = "dd.mm.yyyy";
     private static final String EXT = ".jpg";
-    private static final String DIR = "assets";
+    private static final String DIR = "data";
 
     private MovieParser() {
     }
