@@ -68,6 +68,7 @@ public class SqlRepository implements Repository {
     private static final String PROC_UPDATE_DIRECTOR = "{ CALL proc_update_director  (?,?) }";
     private static final String PROC_DELETE_DIRECTOR = "{ CALL proc_delete_director (?) }";
 
+    private static final String PROC_CREATE_USER = "{ CALL proc_create_user  (?,?,?) }";
     private static final String PROC_READ_USER = "{ CALL proc_get_user  (?) }";
 
     private static final String PROC_CREATE_MOVIE_ACTOR = "{ CALL proc_create_movie_actor  (?,?) }";
@@ -405,6 +406,21 @@ public class SqlRepository implements Repository {
     }
 
     @Override
+    public int createUser(User user) throws Exception {
+        DataSource dataSource = DataSourceSingleton.getInstance();
+        try (Connection con = dataSource.getConnection();
+                CallableStatement stmt = con.prepareCall(PROC_CREATE_USER)) {
+
+            stmt.setString(1, user.getUsername());
+            stmt.setString(2, user.getPasswordHash());
+            stmt.registerOutParameter(3, Types.INTEGER);
+
+            stmt.executeUpdate();
+            return stmt.getInt(3);
+        }
+    }
+
+    @Override
     public Optional<User> selectUser(String username) throws Exception {
         DataSource dataSource = DataSourceSingleton.getInstance();
         try (Connection con = dataSource.getConnection();
@@ -545,5 +561,4 @@ public class SqlRepository implements Repository {
         }
         return directors;
     }
-
 }

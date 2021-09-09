@@ -185,6 +185,18 @@ begin
     exec proc_create_default_user
 end
 go
+drop procedure if exists proc_create_user
+go
+create procedure proc_create_user @Username nvarchar(32),
+                                  @PasswordHash nvarchar(128),
+                                  @UserID int output
+as
+begin
+    insert into Users
+    values (@Username, @PasswordHash, (select top 1 IDRole from Roles where Title = 'User'))
+    set @UserID = scope_identity()
+end
+go
 drop procedure if exists proc_get_user
 go
 create procedure proc_get_user @Search nvarchar(128)
@@ -440,7 +452,10 @@ go
 create proc proc_read_movie_actor @MovieID int
 as
 begin
-    select A.* from MovieActor MA inner join Actors A on A.IDActor = MA.ActorID where MovieID = @MovieID
+    select A.*
+    from MovieActor MA
+             inner join Actors A on A.IDActor = MA.ActorID
+    where MovieID = @MovieID
 end
 go
 drop procedure if exists proc_delete_movie_actor
@@ -473,7 +488,10 @@ go
 create proc proc_read_movie_director @MovieID int
 as
 begin
-    select D.* from MovieDirector MD inner join Directors D on D.IDDirector = MD.DirectorID where MovieID = @MovieID
+    select D.*
+    from MovieDirector MD
+             inner join Directors D on D.IDDirector = MD.DirectorID
+    where MovieID = @MovieID
 end
 go
 drop procedure if exists proc_delete_movie_director
