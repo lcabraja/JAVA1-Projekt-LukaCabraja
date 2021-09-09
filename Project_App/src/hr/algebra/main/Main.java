@@ -6,11 +6,18 @@
 package hr.algebra.main;
 
 import hr.algebra.admin.CinestarDownload;
+import hr.algebra.dal.Repository;
+import hr.algebra.dal.RepositoryFactory;
 import hr.algebra.login.Login;
 import hr.algebra.model.User;
+import hr.algebra.user.MovieCRUD;
+import hr.algebra.utils.MessageUtils;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -26,8 +33,12 @@ public class Main extends javax.swing.JFrame {
         init();
     }
 
+    private Repository repository;
+
     private User user = null;
     private CinestarDownload cinestarDownload;
+    private Login loginForm;
+    private MovieCRUD movieCrud;
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -48,7 +59,6 @@ public class Main extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(800, 600));
         setPreferredSize(new java.awt.Dimension(800, 600));
-        setResizable(false);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowOpened(java.awt.event.WindowEvent evt) {
                 formWindowOpened(evt);
@@ -80,11 +90,11 @@ public class Main extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 829, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 829, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 606, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 606, Short.MAX_VALUE)
         );
 
         pack();
@@ -139,24 +149,28 @@ public class Main extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
 
     private void init() {
+        try {
+            initWindow();
+            initRepository();
+
+            setUserMenu();
+            createPanels();
+            setLoginTabs();
+        } catch (Exception ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void initWindow() {
         setLocationRelativeTo(null);
         setTitle("JAVA1DB");
+    }
 
-        setUserMenu();
-        createPanels();
-        setLoginTabs();
+    private void initRepository() throws Exception {
+        repository = RepositoryFactory.getRepository();
     }
 
     private void setUserMenu() {
-        //        try {
-//            List<Movie> parse = MovieParser.parse();
-//            parse.isEmpty();
-//            parse.forEach((movie) -> {
-//                System.out.println(movie);
-//            });
-//        } catch (IOException | XMLStreamException ex) {
-//            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-//        }
         if (user == null) {
             return;
         }
@@ -179,11 +193,10 @@ public class Main extends javax.swing.JFrame {
         jMenu2.add(m2LogOut);
     }
 
-    private javax.swing.JPanel loginForm;
-
     private void createPanels() {
         loginForm = new Login(this);
         cinestarDownload = new CinestarDownload();
+        movieCrud = new MovieCRUD();
     }
 
     private void setLoginTabs() {
@@ -197,6 +210,7 @@ public class Main extends javax.swing.JFrame {
 
         if ("Admin".equals(user.getRole())) {
             setAdminTabs();
+            setAdminMenu();
         } else {
             setUserTabs();
         }
@@ -207,7 +221,27 @@ public class Main extends javax.swing.JFrame {
         jTabbedPane1.addTab("Cinestar RSS", cinestarDownload);
     }
 
+    private void setAdminMenu() {
+        JMenu adminMenu = new JMenu("Admin");
+        JMenuItem clearAll = new JMenuItem("Clear Database");
+
+        clearAll.addActionListener((ActionEvent ev) -> {
+
+            if (MessageUtils.showConfirmDialog("Delete entire database?", "Please confirm that you want to delete the entire database.") == JOptionPane.YES_OPTION) {
+                try {
+                    repository.clearAllData(user);
+                } catch (Exception ex) {
+                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+
+        adminMenu.add(clearAll);
+        jMenuBar1.add(adminMenu);
+    }
+
     private void setUserTabs() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        jTabbedPane1.removeAll();
+        jTabbedPane1.addTab("Movie CRUD", movieCrud);
     }
 }
