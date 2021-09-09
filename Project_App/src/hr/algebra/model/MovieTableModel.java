@@ -6,6 +6,7 @@
 package hr.algebra.model;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.swing.table.AbstractTableModel;
 
 /**
@@ -65,9 +66,9 @@ public class MovieTableModel extends AbstractTableModel {
             case 11:
                 return movies.get(rowIndex).getStartsPlaying();
             case 12:
-                return movies.get(rowIndex).getActors();
+                return movies.get(rowIndex).getActors().stream().map(e -> e.toString()).reduce("", String::concat);
             case 13:
-                return movies.get(rowIndex).getDirectors();
+                return movies.get(rowIndex).getDirectors().stream().map(e -> e.toString()).reduce("", String::concat);
             default:
                 throw new RuntimeException("No such column");
         }
