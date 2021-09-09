@@ -26,7 +26,7 @@
         </Menu>
         <Menu class="javax.swing.JMenu" name="jMenu2">
           <Properties>
-            <Property name="text" type="java.lang.String" value="User"/>
+            <Property name="text" type="java.lang.String" value="Logged in"/>
             <Property name="enabled" type="boolean" value="false"/>
           </Properties>
         </Menu>

@@ -6,6 +6,9 @@
       <Dimension value="[751, 477]"/>
     </Property>
   </Properties>
+  <Events>
+    <EventHandler event="componentShown" listener="java.awt.event.ComponentListener" parameters="java.awt.event.ComponentEvent" handler="formComponentShown"/>
+  </Events>
   <AuxValues>
     <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
     <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
@@ -24,105 +27,83 @@
           <Group type="102" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="jScrollPane2" pref="727" max="32767" attributes="0"/>
                   <Group type="102" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" alignment="0" attributes="0">
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Group type="102" alignment="0" attributes="0">
-                                      <Component id="lbOriginalTitle" min="-2" pref="104" max="-2" attributes="0"/>
-                                      <EmptySpace min="-2" pref="3" max="-2" attributes="0"/>
-                                      <Component id="tfOriginalTitle" max="32767" attributes="0"/>
-                                  </Group>
-                                  <Group type="102" alignment="0" attributes="0">
-                                      <Component id="lbDatePublished" min="-2" pref="104" max="-2" attributes="0"/>
-                                      <EmptySpace min="-2" pref="3" max="-2" attributes="0"/>
-                                      <Component id="tfDatePublished" max="32767" attributes="0"/>
-                                  </Group>
-                                  <Group type="102" alignment="0" attributes="0">
-                                      <Component id="lbHTMLDescription" min="-2" pref="104" max="-2" attributes="0"/>
-                                      <EmptySpace min="-2" pref="3" max="-2" attributes="0"/>
-                                      <Component id="tfHTMLDescription" max="32767" attributes="0"/>
-                                  </Group>
-                                  <Group type="102" alignment="0" attributes="0">
-                                      <Component id="lbLength" min="-2" pref="104" max="-2" attributes="0"/>
-                                      <EmptySpace min="-2" pref="3" max="-2" attributes="0"/>
-                                      <Component id="tfLength" max="32767" attributes="0"/>
-                                  </Group>
-                                  <Group type="102" alignment="0" attributes="0">
-                                      <Component id="lbGenre" min="-2" pref="104" max="-2" attributes="0"/>
-                                      <EmptySpace min="-2" pref="3" max="-2" attributes="0"/>
-                                      <Component id="tfGenre" max="32767" attributes="0"/>
-                                  </Group>
-                                  <Group type="102" alignment="0" attributes="0">
-                                      <Component id="lbTrailerLink" min="-2" pref="104" max="-2" attributes="0"/>
-                                      <EmptySpace min="-2" pref="3" max="-2" attributes="0"/>
-                                      <Component id="tfTrailerLink" max="32767" attributes="0"/>
-                                  </Group>
-                                  <Group type="102" alignment="0" attributes="0">
-                                      <Component id="lbLink" min="-2" pref="104" max="-2" attributes="0"/>
-                                      <EmptySpace min="-2" pref="3" max="-2" attributes="0"/>
-                                      <Component id="tfLink" max="32767" attributes="0"/>
-                                  </Group>
-                                  <Group type="102" alignment="0" attributes="0">
-                                      <Component id="lbGuid" min="-2" pref="104" max="-2" attributes="0"/>
-                                      <EmptySpace min="-2" pref="3" max="-2" attributes="0"/>
-                                      <Component id="tfGuid" max="32767" attributes="0"/>
-                                  </Group>
-                                  <Group type="102" alignment="0" attributes="0">
-                                      <Component id="lbStartsPlaying" min="-2" pref="104" max="-2" attributes="0"/>
-                                      <EmptySpace min="-2" pref="3" max="-2" attributes="0"/>
-                                      <Component id="tfStartsPlaying" max="32767" attributes="0"/>
-                                  </Group>
-                                  <Group type="102" attributes="0">
-                                      <Component id="lbPosterFilePath" min="-2" pref="104" max="-2" attributes="0"/>
-                                      <EmptySpace max="32767" attributes="0"/>
-                                      <Component id="tfPosterFilePath" min="-2" pref="249" max="-2" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="btUpload" min="-2" pref="113" max="-2" attributes="0"/>
-                                  </Group>
-                                  <Group type="102" alignment="0" attributes="0">
-                                      <Component id="lbTitle" min="-2" pref="104" max="-2" attributes="0"/>
-                                      <EmptySpace min="-2" pref="3" max="-2" attributes="0"/>
-                                      <Group type="103" groupAlignment="0" attributes="0">
-                                          <Group type="102" attributes="0">
-                                              <Component id="tfIDMovie" min="-2" pref="80" max="-2" attributes="0"/>
-                                              <EmptySpace max="-2" attributes="0"/>
-                                              <Component id="lbErrIDMovie" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace max="-2" attributes="0"/>
-                                              <Component id="btUpdate" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace max="-2" attributes="0"/>
-                                              <Component id="btCreate" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace max="-2" attributes="0"/>
-                                              <Component id="btDelete" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-                                          </Group>
-                                          <Component id="tfTitle" max="32767" attributes="0"/>
-                                      </Group>
-                                  </Group>
-                              </Group>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="lbErrTitle" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="lbErrOriginalTitle" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="lbErrDatePublished" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="lbErrHTMLDescription" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="lbErrLength" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="lbErrGenre" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="lbErrPosterFilePath" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="lbErrTrailerLink" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="lbErrLink" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="lbErrGuid" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="lbErrStartsPlaying" alignment="0" min="-2" max="-2" attributes="0"/>
-                              </Group>
+                          <Group type="102" alignment="1" attributes="0">
+                              <Component id="lbTrailerLink" min="-2" pref="104" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="3" max="-2" attributes="0"/>
+                              <Component id="tfTrailerLink" max="32767" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
-                              <Component id="lbIDMovie" min="-2" pref="104" max="-2" attributes="0"/>
-                              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                              <Component id="lbOriginalTitle" min="-2" pref="104" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="3" max="-2" attributes="0"/>
+                              <Component id="tfOriginalTitle" max="32767" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="lbLink" min="-2" pref="104" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="3" max="-2" attributes="0"/>
+                              <Component id="tfLink" max="32767" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="lbGuid" min="-2" pref="104" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="3" max="-2" attributes="0"/>
+                              <Component id="tfGuid" max="32767" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="lbStartsPlaying" min="-2" pref="104" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="3" max="-2" attributes="0"/>
+                              <Component id="tfStartsPlaying" max="32767" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="lbTitle" min="-2" pref="104" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="3" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="tfIDMovie" max="32767" attributes="0"/>
+                                  <Component id="tfTitle" max="32767" attributes="0"/>
+                              </Group>
+                          </Group>
+                          <Group type="102" attributes="0">
+                              <Component id="lbPosterFilePath" min="-2" pref="104" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="3" max="-2" attributes="0"/>
+                              <Component id="tfPosterFilePath" max="32767" attributes="0"/>
+                          </Group>
+                          <Group type="102" attributes="0">
+                              <Component id="lbGenre" min="-2" pref="104" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="3" max="-2" attributes="0"/>
+                              <Component id="tfGenre" max="32767" attributes="0"/>
+                          </Group>
+                          <Group type="102" attributes="0">
+                              <Component id="lbLength" min="-2" pref="104" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="3" max="-2" attributes="0"/>
+                              <Component id="tfLength" max="32767" attributes="0"/>
+                          </Group>
+                          <Group type="102" attributes="0">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="lbHTMLDescription" min="-2" pref="104" max="-2" attributes="0"/>
+                                  <Component id="lbIDMovie" min="-2" pref="104" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace min="-2" pref="3" max="-2" attributes="0"/>
+                              <Component id="jScrollPane3" max="32767" attributes="0"/>
                           </Group>
                       </Group>
-                      <Component id="lbPoster" min="-2" pref="202" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="lbErrLength" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="lbErrGenre" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="lbErrPosterFilePath" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="lbErrTrailerLink" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="lbErrLink" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="lbErrGuid" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="lbErrStartsPlaying" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="lbErrTitle" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="lbErrOriginalTitle" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="lbErrHTMLDescription" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="lbErrIDMovie" alignment="0" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <Component id="jScrollPane2" max="32767" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -131,9 +112,9 @@
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="1" attributes="0">
-              <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
+                      <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" attributes="0">
                               <Component id="lbIDMovie" min="-2" max="-2" attributes="0"/>
@@ -143,9 +124,6 @@
                               <Group type="103" groupAlignment="3" attributes="0">
                                   <Component id="tfIDMovie" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="lbErrIDMovie" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="btUpdate" alignment="3" pref="0" max="32767" attributes="0"/>
-                                  <Component id="btCreate" alignment="3" pref="0" max="32767" attributes="0"/>
-                                  <Component id="btDelete" alignment="3" pref="0" max="32767" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
@@ -161,41 +139,36 @@
                           <Component id="lbOriginalTitle" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="lbErrOriginalTitle" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="tfDatePublished" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="lbDatePublished" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="lbErrDatePublished" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="tfHTMLDescription" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="lbHTMLDescription" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="lbErrHTMLDescription" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="lbHTMLDescription" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="lbErrHTMLDescription" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <Component id="jScrollPane3" alignment="0" min="-2" pref="128" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="tfLength" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="lbLength" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="lbErrLength" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="lbLength" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="tfGenre" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="lbGenre" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="lbErrGenre" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="lbGenre" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="tfPosterFilePath" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="lbPosterFilePath" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="lbErrPosterFilePath" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="tfPosterFilePath" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="btUpload" alignment="3" pref="0" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="tfTrailerLink" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="lbTrailerLink" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="tfTrailerLink" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="lbErrTrailerLink" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
@@ -217,10 +190,10 @@
                           <Component id="lbErrStartsPlaying" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
-                  <Component id="lbPoster" min="-2" pref="294" max="-2" attributes="0"/>
+                  <Component id="jPanel1" alignment="1" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="jScrollPane2" pref="163" max="32767" attributes="0"/>
+              <Component id="jScrollPane2" pref="93" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -254,7 +227,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="lbErrIDMovie">
       <Properties>
-        <Property name="text" type="java.lang.String" value="jLabel2"/>
+        <Property name="text" type="java.lang.String" value="ID"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="tfIDMovie">
@@ -270,7 +243,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="lbErrTitle">
       <Properties>
-        <Property name="text" type="java.lang.String" value="jLabel2"/>
+        <Property name="text" type="java.lang.String" value="Title"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="tfTitle">
@@ -285,28 +258,12 @@
     </Component>
     <Component class="javax.swing.JLabel" name="lbErrOriginalTitle">
       <Properties>
-        <Property name="text" type="java.lang.String" value="jLabel2"/>
+        <Property name="text" type="java.lang.String" value="OriginalTitle"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="tfOriginalTitle">
       <Properties>
         <Property name="text" type="java.lang.String" value="jTextField1"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="lbDatePublished">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Date Published"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="lbErrDatePublished">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="jLabel2"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JTextField" name="tfDatePublished">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="jTextField1"/>
-        <Property name="enabled" type="boolean" value="false"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="lbHTMLDescription">
@@ -316,14 +273,21 @@
     </Component>
     <Component class="javax.swing.JLabel" name="lbErrHTMLDescription">
       <Properties>
-        <Property name="text" type="java.lang.String" value="jLabel2"/>
+        <Property name="text" type="java.lang.String" value="HTML"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JTextField" name="tfHTMLDescription">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="jTextField1"/>
-      </Properties>
-    </Component>
+    <Container class="javax.swing.JScrollPane" name="jScrollPane3">
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+      <SubComponents>
+        <Component class="javax.swing.JTextArea" name="taHTMLDescription">
+          <Properties>
+            <Property name="columns" type="int" value="20"/>
+            <Property name="rows" type="int" value="5"/>
+          </Properties>
+        </Component>
+      </SubComponents>
+    </Container>
     <Component class="javax.swing.JLabel" name="lbLength">
       <Properties>
         <Property name="text" type="java.lang.String" value="Length"/>
@@ -331,7 +295,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="lbErrLength">
       <Properties>
-        <Property name="text" type="java.lang.String" value="jLabel2"/>
+        <Property name="text" type="java.lang.String" value="Length"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="tfLength">
@@ -346,7 +310,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="lbErrGenre">
       <Properties>
-        <Property name="text" type="java.lang.String" value="jLabel2"/>
+        <Property name="text" type="java.lang.String" value="Genre"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="tfGenre">
@@ -361,7 +325,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="lbErrPosterFilePath">
       <Properties>
-        <Property name="text" type="java.lang.String" value="jLabel2"/>
+        <Property name="text" type="java.lang.String" value="Poster"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="tfPosterFilePath">
@@ -377,7 +341,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="lbErrTrailerLink">
       <Properties>
-        <Property name="text" type="java.lang.String" value="jLabel2"/>
+        <Property name="text" type="java.lang.String" value="Trailer"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="tfTrailerLink">
@@ -392,7 +356,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="lbErrLink">
       <Properties>
-        <Property name="text" type="java.lang.String" value="jLabel2"/>
+        <Property name="text" type="java.lang.String" value="Link"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="tfLink">
@@ -407,7 +371,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="lbErrGuid">
       <Properties>
-        <Property name="text" type="java.lang.String" value="jLabel2"/>
+        <Property name="text" type="java.lang.String" value="Guid"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="tfGuid">
@@ -422,59 +386,54 @@
     </Component>
     <Component class="javax.swing.JLabel" name="lbErrStartsPlaying">
       <Properties>
-        <Property name="text" type="java.lang.String" value="jLabel2"/>
+        <Property name="text" type="java.lang.String" value="StartsPlaying"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="tfStartsPlaying">
       <Properties>
         <Property name="text" type="java.lang.String" value="jTextField1"/>
-        <Property name="enabled" type="boolean" value="false"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JLabel" name="lbPoster">
-      <Properties>
-        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-          <Image iconType="3" name="/hr/algebra/user/no_image.jpeg"/>
-        </Property>
-        <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[556, 800]"/>
-        </Property>
-        <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[202, 291]"/>
-        </Property>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JButton" name="btUpdate">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Update"/>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btUpdateActionPerformed"/>
-      </Events>
-    </Component>
-    <Component class="javax.swing.JButton" name="btCreate">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Create"/>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btCreateActionPerformed"/>
-      </Events>
-    </Component>
-    <Component class="javax.swing.JButton" name="btDelete">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Delete"/>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btDeleteActionPerformed"/>
-      </Events>
-    </Component>
-    <Component class="javax.swing.JButton" name="btUpload">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Upload"/>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btUploadActionPerformed"/>
-      </Events>
-    </Component>
+    <Container class="javax.swing.JPanel" name="jPanel1">
+
+      <Layout>
+        <DimensionLayout dim="0">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Component id="btChange" max="32767" attributes="0"/>
+              <Component id="lbPoster" alignment="0" max="32767" attributes="0"/>
+          </Group>
+        </DimensionLayout>
+        <DimensionLayout dim="1">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" alignment="1" attributes="0">
+                  <Component id="lbPoster" min="-2" pref="325" max="-2" attributes="0"/>
+                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                  <Component id="btChange" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="32767" attributes="0"/>
+              </Group>
+          </Group>
+        </DimensionLayout>
+      </Layout>
+      <SubComponents>
+        <Component class="javax.swing.JButton" name="btChange">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Change Image"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="lbPoster">
+          <Properties>
+            <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+              <Dimension value="[226, 325]"/>
+            </Property>
+            <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+              <Dimension value="[226, 325]"/>
+            </Property>
+            <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+              <Dimension value="[226, 325]"/>
+            </Property>
+          </Properties>
+        </Component>
+      </SubComponents>
+    </Container>
   </SubComponents>
 </Form>

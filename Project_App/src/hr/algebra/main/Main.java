@@ -10,6 +10,7 @@ import hr.algebra.dal.Repository;
 import hr.algebra.dal.RepositoryFactory;
 import hr.algebra.login.Login;
 import hr.algebra.model.User;
+import hr.algebra.user.Crudable;
 import hr.algebra.user.MovieCRUD;
 import hr.algebra.utils.MessageUtils;
 import java.awt.event.ActionEvent;
@@ -39,6 +40,7 @@ public class Main extends javax.swing.JFrame {
     private CinestarDownload cinestarDownload;
     private Login loginForm;
     private MovieCRUD movieCrud;
+    private Crudable selectedTab;
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -80,7 +82,7 @@ public class Main extends javax.swing.JFrame {
 
         jMenuBar1.add(jMenu1);
 
-        jMenu2.setText("User");
+        jMenu2.setText("Logged in");
         jMenu2.setEnabled(false);
         jMenuBar1.add(jMenu2);
 
@@ -153,7 +155,7 @@ public class Main extends javax.swing.JFrame {
             initWindow();
             initRepository();
 
-            setUserMenu();
+            setCurrentAccountMenu();
             createPanels();
             setLoginTabs();
         } catch (Exception ex) {
@@ -170,20 +172,19 @@ public class Main extends javax.swing.JFrame {
         repository = RepositoryFactory.getRepository();
     }
 
-    private void setUserMenu() {
+    private void setCurrentAccountMenu() {
         if (user == null) {
             return;
         }
         jMenu2.setEnabled(true);
 
-        JMenuItem m2Username = new JMenuItem("User: " + user.getUsername());
+        JMenuItem m2Username = new JMenuItem("As: " + user.getUsername());
         JMenuItem m2Role = new JMenuItem("Role: " + user.getRole());
         JMenuItem m2AccessLevel = new JMenuItem("Access Level: " + user.getAccessLevel());
         JMenuItem m2LogOut = new JMenuItem("Log Out");
 
         m2LogOut.addActionListener((ActionEvent ev) -> {
-            jMenu2.setEnabled(false);
-            setLoginTabs();
+            userLoggedOut();
         });
 
         jMenu2.removeAll();
@@ -204,21 +205,14 @@ public class Main extends javax.swing.JFrame {
         jTabbedPane1.addTab("Login", loginForm);
     }
 
-    public void userLoggedIn(User user) {
-        this.user = user;
-        setUserMenu();
-
-        if ("Admin".equals(user.getRole())) {
-            setAdminTabs();
-            setAdminMenu();
-        } else {
-            setUserTabs();
-        }
-    }
-
     private void setAdminTabs() {
         jTabbedPane1.removeAll();
         jTabbedPane1.addTab("Cinestar RSS", cinestarDownload);
+    }
+
+    private void setUserTabs() {
+        jTabbedPane1.removeAll();
+        jTabbedPane1.addTab("Movie CRUD", movieCrud);
     }
 
     private void setAdminMenu() {
@@ -240,8 +234,52 @@ public class Main extends javax.swing.JFrame {
         jMenuBar1.add(adminMenu);
     }
 
-    private void setUserTabs() {
-        jTabbedPane1.removeAll();
-        jTabbedPane1.addTab("Movie CRUD", movieCrud);
+    private void setUserMenu(String itemName) {
+        clearMenuBar(2);
+        JMenu crudMenu = new JMenu("CRUD");
+        JMenuItem createItem = new JMenuItem("Create" + itemName);
+        JMenuItem updateItem = new JMenuItem("Update" + itemName);
+        JMenuItem deleteItem = new JMenuItem("Delete" + itemName);
+
+        createItem.addActionListener((ActionEvent e) -> {
+            selectedTab.CreateAction();
+        });
+        updateItem.addActionListener((ActionEvent e) -> {
+            selectedTab.UpdateAction();
+        });
+        deleteItem.addActionListener((ActionEvent e) -> {
+            selectedTab.DeleteAction();
+        });
+        
+        crudMenu.add(createItem);
+        crudMenu.add(updateItem);
+        crudMenu.add(deleteItem);
+        
+        jMenuBar1.add(crudMenu);
+    }
+
+    public void userLoggedIn(User user) {
+        this.user = user;
+        setCurrentAccountMenu();
+
+        if ("Admin".equals(user.getRole())) {
+            setAdminTabs();
+            setAdminMenu();
+        } else {
+            setUserTabs();
+            setUserMenu("movie");
+        }
+    }
+
+    public void userLoggedOut() {
+        jMenu2.setEnabled(false);
+        clearMenuBar(2);
+        setLoginTabs();
+    }
+
+    private void clearMenuBar(int remaining) {
+        while (jMenuBar1.getMenuCount() > remaining) {
+            jMenuBar1.remove(remaining);
+        }
     }
 }
