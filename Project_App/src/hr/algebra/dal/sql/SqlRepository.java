@@ -530,7 +530,19 @@ public class SqlRepository implements Repository {
     @Override
     public List<Director> selectMovieDirectors(int MovieID) throws Exception {
         List<Director> directors = new ArrayList<>();
+        DataSource dataSource = DataSourceSingleton.getInstance();
+        try (Connection con = dataSource.getConnection();
+                CallableStatement stmt = con.prepareCall(PROC_READ_MOVIE_DIRECTOR);
+                ResultSet rs = stmt.executeQuery()) {
 
+            while (rs.next()) {
+                directors.add(new Director(
+                        rs.getInt(ID_DIRECTOR),
+                        rs.getInt(PERSON_ID),
+                        rs.getString(FULL_NAME),
+                        rs.getString(ALTERNATE_NAME)));
+            }
+        }
         return directors;
     }
 
