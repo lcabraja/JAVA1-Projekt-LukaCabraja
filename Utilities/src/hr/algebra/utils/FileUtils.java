@@ -110,4 +110,15 @@ public class FileUtils {
         return Optional.empty();
     }
 
+    public static void recursivelyDeleteDirectory(File file, boolean leaveDir) {
+        File[] contents = file.listFiles();
+        if (contents != null) {
+            for (File f : contents) {
+                recursivelyDeleteDirectory(f, false);
+            }
+        }
+        if (!leaveDir) {
+            file.delete();
+        }
+    }
 }
