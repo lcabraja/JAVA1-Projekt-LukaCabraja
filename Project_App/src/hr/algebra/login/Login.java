@@ -7,6 +7,7 @@ package hr.algebra.login;
 
 import hr.algebra.dal.Repository;
 import hr.algebra.dal.RepositoryFactory;
+import hr.algebra.main.Main;
 import hr.algebra.model.User;
 import hr.algebra.utils.MessageUtils;
 import java.util.Optional;
@@ -24,12 +25,18 @@ public class Login extends javax.swing.JPanel {
      * Creates new form Login
      */
     private User lastUser;
+    private boolean registerUser = false;
 
-    JFrame daddy;
+    Main daddy;
 
-    public Login(JFrame father) {
+    public Login(Main father) {
         initComponents();
-        init(father);
+        daddy = father;
+        //TODO REMOVE WHEN DONE WITH TESTING
+        tfUsername.setText("Admin");
+        checkUsername();
+        pfPassword.setText("password");
+        //checkPassword();
     }
 
     /**
@@ -46,6 +53,13 @@ public class Login extends javax.swing.JPanel {
         tfUsername = new javax.swing.JTextField();
         pfPassword = new javax.swing.JPasswordField();
         btCheckUser = new javax.swing.JButton();
+
+        setPreferredSize(new java.awt.Dimension(782, 513));
+        addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentShown(java.awt.event.ComponentEvent evt) {
+                formComponentShown(evt);
+            }
+        });
 
         btLogin.setText("Log in");
         btLogin.setEnabled(false);
@@ -71,7 +85,7 @@ public class Login extends javax.swing.JPanel {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(64, 64, 64)
+                .addGap(20, 20, 20)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
@@ -82,55 +96,83 @@ public class Login extends javax.swing.JPanel {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(btCheckUser, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(btLogin, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                .addContainerGap(64, Short.MAX_VALUE))
+                .addContainerGap(490, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(64, 64, 64)
+                .addGap(20, 20, 20)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(tfUsername, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btCheckUser, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(pfPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(64, 64, 64))
+                .addContainerGap(428, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     private void btLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btLoginActionPerformed
+        checkPassword();
+    }//GEN-LAST:event_btLoginActionPerformed
+
+    private void checkPassword() {
         if (pfPassword.getText().trim().isEmpty()) {
             return;
         }
-        if (lastUser.getPasswordHash().equals(pfPassword.getText())) { // let's pretend this is hashed, salted and peppered
-
+        if (registerUser) {
+            if (lastUser.getPasswordHash().equals(pfPassword.getText())) { // let's pretend this is hashed, salted and peppered
+                daddy.userLoggedIn(lastUser);
+            } else {
+                MessageUtils.showInformationMessage("Wrong password", "You have entered an incorrect password, please try again...");
+            }
         } else {
-            MessageUtils.showInformationMessage("Wrong password", "You have entered an incorrect password, please try again...");
+            User newUser = new User(tfUsername.getText(), pfPassword.getText());
+            try {
+                RepositoryFactory.getRepository().createUser(newUser);
+                checkUsername();
+            } catch (Exception ex) {
+                Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+                MessageUtils.showErrorMessage("Could not connect to database, please try again later...", "Database Error");
+            }
         }
-    }//GEN-LAST:event_btLoginActionPerformed
+    }
 
     private void btCheckUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btCheckUserActionPerformed
+        checkUsername();
+    }//GEN-LAST:event_btCheckUserActionPerformed
+
+    private void formComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentShown
+        //checkPassword();           // TODO add your handling code here:
+    }//GEN-LAST:event_formComponentShown
+
+    private void checkUsername() {
         if (tfUsername.getText().trim().isEmpty()) {
             return;
         }
         try {
             Repository repository = RepositoryFactory.getRepository();
             Optional<User> potentialUser = repository.selectUser(tfUsername.getText().trim());
-            if (potentialUser.isPresent()) {
+            registerUser = potentialUser.isPresent();
+            if (registerUser) {
                 lastUser = potentialUser.get();
                 jLabel1.setText("User: " + lastUser.getUsername() + " | Role: " + lastUser.getRole() + " | Access Level: " + lastUser.getAccessLevel());
-                pfPassword.setEnabled(true);
-                btLogin.setEnabled(true);
+                btLogin.setText("Login");
+            } else {
+                jLabel1.setText("User not found, please register.");
+                btLogin.setText("Register");
             }
+            pfPassword.setEnabled(true);
+            btLogin.setEnabled(true);
 
         } catch (Exception ex) {
             Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
             MessageUtils.showErrorMessage("Database connection error", "The program could not connect to the SQL database, please try again later...");
         }
-    }//GEN-LAST:event_btCheckUserActionPerformed
+    }
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -140,8 +182,4 @@ public class Login extends javax.swing.JPanel {
     private javax.swing.JPasswordField pfPassword;
     private javax.swing.JTextField tfUsername;
     // End of variables declaration//GEN-END:variables
-
-    private void init(JFrame father) {
-        daddy = father;
-    }
 }
