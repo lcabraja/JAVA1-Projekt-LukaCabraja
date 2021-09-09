@@ -5,6 +5,20 @@
  */
 package hr.algebra.admin;
 
+import hr.algebra.dal.Repository;
+import hr.algebra.dal.RepositoryFactory;
+import hr.algebra.model.Movie;
+import hr.algebra.model.MovieTableModel;
+import hr.algebra.parsers.rss.MovieParser;
+import hr.algebra.utils.MessageUtils;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.ListSelectionModel;
+import javax.xml.stream.XMLStreamException;
+
 /**
  *
  * @author lcabraja
@@ -14,8 +28,15 @@ public class CinestarDownload extends javax.swing.JPanel {
     /**
      * Creates new form CinestarDownload
      */
+    private Repository repository;
+    
+    private List<Movie> downloadedMovies;
+    private MovieTableModel movieTableModel;
+    private int selectedMovieID;
+    
     public CinestarDownload() {
         initComponents();
+        init();
     }
 
     /**
@@ -28,9 +49,11 @@ public class CinestarDownload extends javax.swing.JPanel {
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tbMovies = new javax.swing.JTable();
+        jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tbMovies.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -41,29 +64,98 @@ public class CinestarDownload extends javax.swing.JPanel {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(tbMovies);
+
+        jButton1.setText("Download RSS");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        jButton2.setText("Upload to Database");
+        jButton2.setToolTipText("");
+        jButton2.setEnabled(false);
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(96, 96, 96)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(202, Short.MAX_VALUE))
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 727, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(29, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(26, 26, 26))
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton1)
+                    .addComponent(jButton2))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 418, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        try {
+            downloadedMovies = MovieParser.parse();
+            movieTableModel.setMovies(downloadedMovies);
+            jButton2.setEnabled(true);
+        } catch (IOException | XMLStreamException ex) {
+            Logger.getLogger(CinestarDownload.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        try {
+            repository.createMovies(downloadedMovies);
+        } catch (Exception ex) {
+            Logger.getLogger(CinestarDownload.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jButton2ActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JTable tbMovies;
     // End of variables declaration//GEN-END:variables
+
+    private void init() {
+        try {
+            initRepository();
+            initTables();
+        } catch (Exception ex) {
+            Logger.getLogger(CinestarDownload.class.getName()).log(Level.SEVERE, null, ex);
+            MessageUtils.showErrorMessage("Fatal error", "Please contact your IT Administrator");
+            System.exit(1);
+        }
+    }
+    
+    private void initRepository() throws Exception {
+        repository = RepositoryFactory.getRepository();
+    }
+    
+    private void initTables() throws Exception {
+        tbMovies.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        tbMovies.setAutoCreateRowSorter(true);
+        tbMovies.setRowHeight(25);
+        movieTableModel = new MovieTableModel(new ArrayList<>());
+        tbMovies.setModel(movieTableModel);
+    }
 }
