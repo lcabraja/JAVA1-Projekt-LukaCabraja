@@ -15,9 +15,14 @@ public class Director {
     private String FullName;
     private String AlternateName;
 
-    public Director(int PersonID, String FullName, String AlternateName) {
-        this.PersonID = PersonID;
+    
+    public Director(String FullName) {
         this.FullName = FullName;
+    }
+
+    public Director(int PersonID, String FullName, String AlternateName) {
+        this(FullName);
+        this.PersonID = PersonID;
         this.AlternateName = AlternateName;
     }
 
