@@ -40,9 +40,9 @@ import microsoft.sql.DateTimeOffset;
 public class MovieParser {
 
     private static final String RSS_URL = "https://www.blitz-cinestar.hr/rss.aspx?najava=1";
+    private static final String TRAILER_PREFIX = "https://slike.blitz-cinestar.hr/Trejleri/";
     public static final String TIMESTAMP_PATTERN = "dd.mm.yyyy";
-    private static final String EXT1 = ".jpg";
-    private static final String EXT2 = ".png";
+    private static final String EXT = ".jpg";
     private static final String DIR = "assets";
 
     private MovieParser() {
@@ -138,7 +138,7 @@ public class MovieParser {
                                     break;
                                 case TRAILER:
                                     if (movie != null && !data.isEmpty()) {
-                                        movie.setTrailerLink(data);
+                                        movie.setTrailerLink(TRAILER_PREFIX + data.replace(" ", "%20"));
                                     }
                                     break;
                                 case STARTS_PLAYING:
@@ -192,7 +192,7 @@ public class MovieParser {
         try {
             String ext = pictureUrl.substring(pictureUrl.lastIndexOf("."));
             if (ext.length() > 4) {
-                ext = EXT1;
+                ext = EXT;
             }
             String pictureName = UUID.randomUUID() + ext;
             String localPicturePath = DIR + File.separator + pictureName;
