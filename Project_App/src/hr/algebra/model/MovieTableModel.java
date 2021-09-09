@@ -15,7 +15,7 @@ import javax.swing.table.AbstractTableModel;
  */
 public class MovieTableModel extends AbstractTableModel {
 
-    private static final String[] COLUMN_NAMES = {"IDMovie", "Title", "OriginalTitle", "DatePublished", "HTMLDescription", "Length", "Genre", "PosterFilePath", "TrailerLink", "Link", "GUID", "StartsPlaying", "Actors", "Directors"};
+    private static final String[] COLUMN_NAMES = {"IDMovie", "Title", "OriginalTitle", "DatePublished", "HTMLDescription", "Length", "Genre", "PosterFilePath", "TrailerLink", "Link", "GUID", "StartsPlaying"};
 
     private List<Movie> movies;
 
@@ -35,7 +35,7 @@ public class MovieTableModel extends AbstractTableModel {
 
     @Override
     public int getColumnCount() {
-        return Movie.class.getDeclaredFields().length - 1; // -1 for the static field
+        return Movie.class.getDeclaredFields().length - 3; // -1 for the static field, and -2 for the arrays
     }
 
     @Override
@@ -65,10 +65,6 @@ public class MovieTableModel extends AbstractTableModel {
                 return movies.get(rowIndex).getGUID();
             case 11:
                 return movies.get(rowIndex).getStartsPlaying();
-            case 12:
-                return movies.get(rowIndex).getActors().stream().map(e -> e.toString()).reduce("", String::concat);
-            case 13:
-                return movies.get(rowIndex).getDirectors().stream().map(e -> e.toString()).reduce("", String::concat);
             default:
                 throw new RuntimeException("No such column");
         }
