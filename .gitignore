@@ -24,3 +24,7 @@ hs_err_pid*
 /Project_App/nbproject/private/
 /Project_App/build/
 /Utilities/build/
+
+*/assets/*.png
+*/assets/*.jpg
+*/assets/*.jpeg
