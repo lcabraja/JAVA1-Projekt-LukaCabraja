@@ -274,7 +274,20 @@ go
 create proc proc_read_movies
 as
 begin
-    select Title, IDMovie from Movie
+        select IDMovie,
+           M.Title,
+           OriginalTitle,
+           DatePublished,
+           HTMLDescription,
+           Length,
+           G.Title,
+           PosterFilePath,
+           TrailerLink,
+           Link,
+           GUID,
+           StartsPlaying
+    from Movie M
+             full join Genres G on M.Genre = G.IDGenre
 end
 go
 drop procedure if exists proc_update_movie

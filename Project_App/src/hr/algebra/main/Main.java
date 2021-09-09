@@ -183,6 +183,7 @@ public class Main extends javax.swing.JFrame {
 
     private void createPanels() {
         loginForm = new Login(this);
+        cinestarDownload = new CinestarDownload();
     }
 
     private void setLoginTabs() {
