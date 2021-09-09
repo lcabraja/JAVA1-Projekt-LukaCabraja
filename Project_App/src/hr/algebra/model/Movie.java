@@ -183,6 +183,6 @@ public class Movie {
 
     @Override
     public String toString() {
-        return "Movie{" + "IDMovie=" + IDMovie + ", Title=" + Title + ", OriginalTitle=" + OriginalTitle + ", DatePublished=" + DatePublished + ", HTMLDescription=" + HTMLDescription + ", Length=" + Length + ", Genre=" + Genre + ", PosterFilePath=" + PosterFilePath + ", TrailerLink=" + TrailerLink + ", Link=" + Link + ", GUID=" + GUID + ", StartsPlaying=" + StartsPlaying + '}';
+        return "Movie{" + "IDMovie=" + IDMovie + ", Title=" + Title + ", OriginalTitle=" + OriginalTitle + ", DatePublished=" + ", HTMLDescription=" + HTMLDescription + ", Length=" + Length + ", Genre=" + Genre + ", PosterFilePath=" + PosterFilePath + ", TrailerLink=" + TrailerLink + ", Link=" + Link + ", GUID=" + GUID + ", StartsPlaying=" + StartsPlaying + '}';
     }
 }
