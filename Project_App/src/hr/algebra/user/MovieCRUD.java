@@ -9,12 +9,17 @@ import hr.algebra.dal.Repository;
 import hr.algebra.dal.RepositoryFactory;
 import hr.algebra.model.Movie;
 import hr.algebra.model.MovieTableModel;
+import hr.algebra.utils.FileUtils;
 import hr.algebra.utils.IconUtils;
 import hr.algebra.utils.MessageUtils;
 import java.io.File;
 import java.io.IOException;
+import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JLabel;
@@ -36,7 +41,7 @@ public class MovieCRUD extends javax.swing.JPanel implements Crudable {
     }
 
     private List<JTextComponent> validationFields;
-    private List<JTextComponent> clearingFields;
+    private List<Integer> validationLengths;
     private List<JLabel> errorLabels;
 
     private Repository repository;
@@ -190,6 +195,11 @@ public class MovieCRUD extends javax.swing.JPanel implements Crudable {
         tfStartsPlaying.setText("jTextField1");
 
         btChange.setText("Change Image");
+        btChange.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btChangeActionPerformed(evt);
+            }
+        });
 
         lbPoster.setMaximumSize(new java.awt.Dimension(226, 325));
         lbPoster.setMinimumSize(new java.awt.Dimension(226, 325));
@@ -372,6 +382,36 @@ public class MovieCRUD extends javax.swing.JPanel implements Crudable {
         clearForm();
     }//GEN-LAST:event_formComponentShown
 
+    private void btChangeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btChangeActionPerformed
+        Optional<File> potentialFile = FileUtils.uploadFile("Images", "jpg", "jpeg", "png");
+        if (potentialFile.isPresent()) {
+            String oldPath = potentialFile.get().getAbsolutePath();
+            System.out.println(oldPath);
+            String ext = oldPath.substring(oldPath.lastIndexOf("."));
+            if (ext.length() > 4) {
+                ext = "jpg";
+            }
+            String posterName = UUID.randomUUID() + ext;
+            String newPath = "data" + File.separator + posterName;
+
+            try {
+                FileUtils.copy(oldPath, newPath);
+            } catch (IOException ex) {
+                Logger.getLogger(MovieCRUD.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            tfPosterFilePath.setText(newPath);
+            setIcon(lbPoster, newPath);
+
+            if (lastMovie != null && !lastMovie.getPosterFilePath().trim().isEmpty()) {
+                try {
+                    File oldImage = new File(lastMovie.getPosterFilePath());
+                    oldImage.delete();
+                } catch (Exception e) {
+                }
+            }
+        }
+    }//GEN-LAST:event_btChangeActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btChange;
@@ -420,6 +460,7 @@ public class MovieCRUD extends javax.swing.JPanel implements Crudable {
             initValidation();
             initRepository();
             initTable();
+            clearForm();
 
         } catch (Exception ex) {
             Logger.getLogger(MovieCRUD.class.getName()).log(Level.SEVERE, null, ex);
@@ -429,9 +470,9 @@ public class MovieCRUD extends javax.swing.JPanel implements Crudable {
     }
 
     private void initValidation() {
-        validationFields = Arrays.asList(tfGenre, tfGuid, taHTMLDescription, tfLength, tfLink, tfOriginalTitle, tfTitle, tfTrailerLink);
-        clearingFields = Arrays.asList(tfGenre, tfGuid, taHTMLDescription, tfIDMovie, tfLength, tfLink, tfOriginalTitle, tfPosterFilePath, tfStartsPlaying, tfTitle, tfTrailerLink);
-        errorLabels = Arrays.asList(lbErrGenre, lbErrGuid, lbErrHTMLDescription, lbErrLength, lbErrLink, lbErrOriginalTitle, lbErrTitle, lbErrTrailerLink);
+        validationFields = Arrays.asList(tfGenre, tfGuid, taHTMLDescription, tfIDMovie, tfLength, tfLink, tfOriginalTitle, tfPosterFilePath, tfStartsPlaying, tfTitle, tfTrailerLink);
+        validationLengths = Arrays.asList(32, 128, 4000, -1, -1, 128, 256, 512, -1, 256, 128);
+        errorLabels = Arrays.asList(lbErrGenre, lbErrGuid, lbErrHTMLDescription, lbErrIDMovie, lbErrLength, lbErrLink, lbErrOriginalTitle, lbErrPosterFilePath, lbErrStartsPlaying, lbErrTitle, lbErrTrailerLink);
     }
 
     private void initRepository() throws Exception {
@@ -446,6 +487,15 @@ public class MovieCRUD extends javax.swing.JPanel implements Crudable {
         tbMovies.setModel(movieTableModel);
     }
 
+    private void setIcon(JLabel label, File file) {
+        try {
+            label.setIcon(IconUtils.createIcon(file, label.getWidth(), label.getHeight()));
+        } catch (IOException ex) {
+            Logger.getLogger(MovieCRUD.class.getName()).log(Level.SEVERE, null, ex);
+            MessageUtils.showErrorMessage("Error", "Unable to upload image");
+        }
+    }
+
     private void setIcon(JLabel label, String filePath) {
         try {
             label.setIcon(IconUtils.createIcon(filePath, label.getWidth(), label.getHeight()));
@@ -458,17 +508,29 @@ public class MovieCRUD extends javax.swing.JPanel implements Crudable {
     private boolean formValid() {
         boolean ok = true;
         for (int i = 0; i < validationFields.size(); i++) {
-            ok &= !validationFields.get(i).getText().trim().isEmpty();
+            ok &= validationFields.get(i).getText().trim().length() > validationLengths.get(i);
             errorLabels.get(i).setText(validationFields.get(i).getText().trim().isEmpty() ? "X" : "");
+        }
+        try {
+            String[] dmy = tfStartsPlaying.getText().trim().split("\\.");
+            Date date = Date.valueOf(LocalDateTime.of(Integer.valueOf(dmy[2]), Integer.valueOf(dmy[1]), Integer.valueOf(dmy[0]), 0, 0).toLocalDate());
+        } catch (NumberFormatException numberFormatException) {
+            ok = false;
         }
         return ok;
     }
 
     private void clearForm() {
-        clearingFields.forEach((component) -> {
+        validationFields.forEach((component) -> {
             component.setText("");
         });
-        setIcon(lbPoster, "assets" + File.separator + "no_image.jpeg");
+        errorLabels.forEach((component) -> {
+            component.setText("");
+        });
+        try {
+            setIcon(lbPoster, "assets" + File.separator + "no_image.jpeg");
+        } catch (Exception e) {
+        }
     }
 
     private void fillForm(Movie movie) {
