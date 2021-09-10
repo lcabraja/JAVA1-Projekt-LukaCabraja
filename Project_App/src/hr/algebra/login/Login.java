@@ -13,7 +13,6 @@ import hr.algebra.utils.MessageUtils;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JFrame;
 
 /**
  *
@@ -33,7 +32,7 @@ public class Login extends javax.swing.JPanel {
         initComponents();
         daddy = father;
         //TODO REMOVE WHEN DONE WITH TESTING
-        tfUsername.setText("Admin");
+        tfUsername.setText("User");
         checkUsername();
         pfPassword.setText("password");
         //checkPassword();
