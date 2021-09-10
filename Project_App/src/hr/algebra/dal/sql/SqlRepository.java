@@ -15,7 +15,6 @@ import java.io.File;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
@@ -384,7 +383,10 @@ public class SqlRepository implements Repository {
         Optional<Movie> potentialMovie = selectMovie(id);
         if (potentialMovie.isPresent()) {
             File poster = new File(potentialMovie.get().getPosterFilePath());
-            poster.delete();
+            try {
+                poster.delete();
+            } catch (Exception e) {
+            }
             try (Connection con = dataSource.getConnection();
                     CallableStatement stmt = con.prepareCall(PROC_DELETE_MOVIE)) {
                 stmt.setInt(1, id);
