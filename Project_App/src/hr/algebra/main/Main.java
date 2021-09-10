@@ -11,6 +11,7 @@ import hr.algebra.dal.RepositoryFactory;
 import hr.algebra.login.Login;
 import hr.algebra.model.User;
 import hr.algebra.user.Crudable;
+import hr.algebra.user.Refreshable;
 import hr.algebra.user.MovieCRUD;
 import hr.algebra.user.PersonCRUD;
 import hr.algebra.utils.MessageUtils;
@@ -43,7 +44,8 @@ public class Main extends javax.swing.JFrame {
     private MovieCRUD movieCrud;
     private PersonCRUD actorCrud;
     private PersonCRUD directorCrud;
-    private Crudable selectedTab;
+    private Crudable selectedCrudable;
+    private Refreshable selectedRefreshable;
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -58,6 +60,7 @@ public class Main extends javax.swing.JFrame {
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jCheckBoxMenuItem1 = new javax.swing.JCheckBoxMenuItem();
+        jMenuItem2 = new javax.swing.JMenuItem();
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenuItem6 = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
@@ -71,6 +74,14 @@ public class Main extends javax.swing.JFrame {
         jCheckBoxMenuItem1.setSelected(true);
         jCheckBoxMenuItem1.setText("Fidget Toggler");
         jMenu1.add(jCheckBoxMenuItem1);
+
+        jMenuItem2.setText("Refresh");
+        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem2ActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItem2);
 
         jMenuItem1.setText("Download XML");
         jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
@@ -118,6 +129,10 @@ public class Main extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+        selectedRefreshable.RefreshData();
+    }//GEN-LAST:event_jMenuItem2ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -155,6 +170,7 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem6;
     private javax.swing.JTabbedPane jTabbedPane1;
     // End of variables declaration//GEN-END:variables
@@ -246,20 +262,25 @@ public class Main extends javax.swing.JFrame {
     private void setUserMenu(String itemName) {
         clearMenuBar(2);
         JMenu crudMenu = new JMenu("CRUD");
+        JMenuItem clearForm = new JMenuItem("Clear form");
         JMenuItem createItem = new JMenuItem("Create " + itemName);
         JMenuItem updateItem = new JMenuItem("Update " + itemName);
         JMenuItem deleteItem = new JMenuItem("Delete " + itemName);
 
+        clearForm.addActionListener((ActionEvent e) -> {
+            selectedCrudable.clearAction();
+        });
         createItem.addActionListener((ActionEvent e) -> {
-            selectedTab.CreateAction();
+            selectedCrudable.createAction();
         });
         updateItem.addActionListener((ActionEvent e) -> {
-            selectedTab.UpdateAction();
+            selectedCrudable.updateAction();
         });
         deleteItem.addActionListener((ActionEvent e) -> {
-            selectedTab.DeleteAction();
+            selectedCrudable.deleteAction();
         });
         
+        crudMenu.add(clearForm);
         crudMenu.add(createItem);
         crudMenu.add(updateItem);
         crudMenu.add(deleteItem);
@@ -275,7 +296,8 @@ public class Main extends javax.swing.JFrame {
             setAdminTabs();
             setAdminMenu();
         } else {
-            selectedTab = movieCrud;
+            selectedCrudable = movieCrud;
+            selectedRefreshable = movieCrud;
             setUserTabs();
             setUserMenu("movie");
         }

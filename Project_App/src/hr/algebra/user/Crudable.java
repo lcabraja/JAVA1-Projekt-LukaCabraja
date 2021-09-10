@@ -11,9 +11,11 @@ package hr.algebra.user;
  */
 public interface Crudable {
 
-    public void CreateAction();
+    public void clearAction();
 
-    public void UpdateAction();
+    public void createAction();
 
-    public void DeleteAction();
+    public void updateAction();
+
+    public void deleteAction();
 }
