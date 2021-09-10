@@ -16,13 +16,17 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Date;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.text.JTextComponent;
 
@@ -30,7 +34,7 @@ import javax.swing.text.JTextComponent;
  *
  * @author lcabraja
  */
-public class MovieCRUD extends javax.swing.JPanel implements Crudable {
+public class MovieCRUD extends javax.swing.JPanel implements Crudable, Refreshable {
 
     /**
      * Creates new form MovieCRUD
@@ -46,6 +50,9 @@ public class MovieCRUD extends javax.swing.JPanel implements Crudable {
 
     private Repository repository;
 
+    private List<String> oldPosters;
+    private List<String> newPosters;
+    private String lastPoster;
     private Movie lastMovie = null;
     private MovieTableModel movieTableModel;
     private int selectedMovieId;
@@ -364,19 +371,12 @@ public class MovieCRUD extends javax.swing.JPanel implements Crudable {
     }// </editor-fold>//GEN-END:initComponents
 
     private void tbMoviesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbMoviesMouseClicked
-        int selectedRow = tbMovies.getSelectedRow();
-        int rowIndex = tbMovies.convertRowIndexToModel(selectedRow);
-        selectedMovieId = (int) movieTableModel.getValueAt(rowIndex, 0);
-        try {
-            Movie movie = repository.selectMovie(selectedMovieId).get();
-            if (movie != null) {
-                lastMovie = movie;
-                fillForm(movie);
-            }
-        } catch (Exception ex) {
-            Logger.getLogger(MovieCRUD.class.getName()).log(Level.SEVERE, null, ex);
-            MessageUtils.showErrorMessage("Error", "Unable to select movie!");
-        }    }//GEN-LAST:event_tbMoviesMouseClicked
+        fillFormWithSelectedRow();
+        deleteFiles(newPosters);
+        newPosters.clear();
+        oldPosters.clear();
+        lastPoster = null;
+    }//GEN-LAST:event_tbMoviesMouseClicked
 
     private void formComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentShown
         clearForm();
@@ -386,7 +386,6 @@ public class MovieCRUD extends javax.swing.JPanel implements Crudable {
         Optional<File> potentialFile = FileUtils.uploadFile("Images", "jpg", "jpeg", "png");
         if (potentialFile.isPresent()) {
             String oldPath = potentialFile.get().getAbsolutePath();
-            System.out.println(oldPath);
             String ext = oldPath.substring(oldPath.lastIndexOf("."));
             if (ext.length() > 4) {
                 ext = "jpg";
@@ -401,18 +400,20 @@ public class MovieCRUD extends javax.swing.JPanel implements Crudable {
             }
             tfPosterFilePath.setText(newPath);
             setIcon(lbPoster, newPath);
-
-            if (lastMovie != null && !lastMovie.getPosterFilePath().trim().isEmpty()) {
-                try {
-                    File oldImage = new File(lastMovie.getPosterFilePath());
-                    oldImage.delete();
-                } catch (Exception e) {
-                }
+            if (lastPoster == null && lastMovie != null) {
+                lastPoster = lastMovie.getPosterFilePath();
             }
+
+            if (lastPoster != null) {
+                oldPosters.add(lastPoster);
+                lastPoster = newPath;
+            }
+
+            newPosters.add(newPath);
         }
     }//GEN-LAST:event_btChangeActionPerformed
 
-
+    // <editor-fold defaultstate="collapsed" desc="Variables declaration">
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btChange;
     private javax.swing.JPanel jPanel1;
@@ -454,12 +455,14 @@ public class MovieCRUD extends javax.swing.JPanel implements Crudable {
     private javax.swing.JTextField tfTitle;
     private javax.swing.JTextField tfTrailerLink;
     // End of variables declaration//GEN-END:variables
+    // </editor-fold>
 
     private void init() {
         try {
             initValidation();
             initRepository();
             initTable();
+            initFields();
             clearForm();
 
         } catch (Exception ex) {
@@ -471,7 +474,7 @@ public class MovieCRUD extends javax.swing.JPanel implements Crudable {
 
     private void initValidation() {
         validationFields = Arrays.asList(tfGenre, tfGuid, taHTMLDescription, tfIDMovie, tfLength, tfLink, tfOriginalTitle, tfPosterFilePath, tfStartsPlaying, tfTitle, tfTrailerLink);
-        validationLengths = Arrays.asList(32, 128, 4000, -1, -1, 128, 256, 512, -1, 256, 128);
+        validationLengths = Arrays.asList(64, 128, 4000, -1, -1, 128, 256, 512, -1, 256, 128);
         errorLabels = Arrays.asList(lbErrGenre, lbErrGuid, lbErrHTMLDescription, lbErrIDMovie, lbErrLength, lbErrLink, lbErrOriginalTitle, lbErrPosterFilePath, lbErrStartsPlaying, lbErrTitle, lbErrTrailerLink);
     }
 
@@ -487,12 +490,18 @@ public class MovieCRUD extends javax.swing.JPanel implements Crudable {
         tbMovies.setModel(movieTableModel);
     }
 
+    private void initFields() {
+        oldPosters = new ArrayList<>();
+        newPosters = new ArrayList<>();
+        lastPoster = null;
+    }
+
     private void setIcon(JLabel label, File file) {
         try {
             label.setIcon(IconUtils.createIcon(file, label.getWidth(), label.getHeight()));
         } catch (IOException ex) {
             Logger.getLogger(MovieCRUD.class.getName()).log(Level.SEVERE, null, ex);
-            MessageUtils.showErrorMessage("Error", "Unable to upload image");
+            MessageUtils.showErrorMessage("Error", "Unable to load image");
         }
     }
 
@@ -501,23 +510,56 @@ public class MovieCRUD extends javax.swing.JPanel implements Crudable {
             label.setIcon(IconUtils.createIcon(filePath, label.getWidth(), label.getHeight()));
         } catch (IOException ex) {
             Logger.getLogger(MovieCRUD.class.getName()).log(Level.SEVERE, null, ex);
-            MessageUtils.showErrorMessage("Error", "Unable to upload image");
+            try {
+                MessageUtils.showErrorMessage("Error", "Unable to load image");
+                label.setIcon(IconUtils.createIcon("assets" + File.separator + "no_image.jpeg", label.getWidth(), label.getHeight()));
+            } catch (IOException ex1) {
+                Logger.getLogger(MovieCRUD.class.getName()).log(Level.SEVERE, null, ex1);
+                label.setIcon(new ImageIcon());
+            }
         }
     }
 
     private boolean formValid() {
         boolean ok = true;
+        boolean condition;
         for (int i = 0; i < validationFields.size(); i++) {
-            ok &= validationFields.get(i).getText().trim().length() > validationLengths.get(i);
-            errorLabels.get(i).setText(validationFields.get(i).getText().trim().isEmpty() ? "X" : "");
+            condition = validationLengths.get(i) > 0 ? validationLengths.get(i) >= validationFields.get(i).getText().trim().length() : true;
+
+//            int min = validationFields.get(i).getText().length();
+//            min = min > 10 ? 10 : min;
+//            System.out.println(validationFields.get(i).getText().substring(0, min) + " | " + validationLengths.get(i) + " >= " + validationFields.get(i).getText().trim().length() + " = " + condition);
+            ok &= condition;
+            errorLabels.get(i).setText(!condition ? "X" : "");
+            if (!ok) {
+            }
         }
+        boolean isDateValid = parseDate(tfStartsPlaying.getText().trim()) != null;
+        ok &= isDateValid;
+        lbErrStartsPlaying.setText(!isDateValid ? "X" : "");
+
+        boolean isLengthValid;
         try {
-            String[] dmy = tfStartsPlaying.getText().trim().split("\\.");
-            Date date = Date.valueOf(LocalDateTime.of(Integer.valueOf(dmy[2]), Integer.valueOf(dmy[1]), Integer.valueOf(dmy[0]), 0, 0).toLocalDate());
-        } catch (NumberFormatException numberFormatException) {
-            ok = false;
+            Integer.valueOf(tfLength.getText().trim());
+            isLengthValid = true;
+        } catch (Exception ex) {
+            isLengthValid = false;
         }
+        ok &= isLengthValid;
+        lbErrLength.setText(!isDateValid ? "X" : "");
+
         return ok;
+    }
+
+    @SuppressWarnings("UseSpecificCatch")
+    private Date parseDate(String dateString) {
+        try {
+            String[] dmy = dateString.split("-");
+            Date date = Date.valueOf(LocalDateTime.of(Integer.valueOf(dmy[0]), Integer.valueOf(dmy[1]), Integer.valueOf(dmy[2]), 0, 0).toLocalDate());
+            return date;
+        } catch (Exception ex) {
+            return null;
+        }
     }
 
     private void clearForm() {
@@ -530,6 +572,33 @@ public class MovieCRUD extends javax.swing.JPanel implements Crudable {
         try {
             setIcon(lbPoster, "assets" + File.separator + "no_image.jpeg");
         } catch (Exception e) {
+        }
+    }
+
+    private void deleteFiles(List<String> files) {
+        files.forEach((poster) -> {
+            try {
+                System.out.println(poster);
+                new File(poster).delete();
+            } catch (Exception e) {
+            }
+        });
+        files.clear();
+    }
+
+    private void fillFormWithSelectedRow() {
+        int selectedRow = tbMovies.getSelectedRow();
+        int rowIndex = tbMovies.convertRowIndexToModel(selectedRow);
+        selectedMovieId = (int) movieTableModel.getValueAt(rowIndex, 0);
+        try {
+            Movie movie = repository.selectMovie(selectedMovieId).get();
+            if (movie != null && lastMovie != movie) {
+                lastMovie = movie;
+                fillForm(movie);
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(MovieCRUD.class.getName()).log(Level.SEVERE, null, ex);
+            MessageUtils.showErrorMessage("Error", "Unable to select movie!");
         }
     }
 
@@ -554,17 +623,106 @@ public class MovieCRUD extends javax.swing.JPanel implements Crudable {
     }
 
     @Override
-    public void CreateAction() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void clearAction() {
+        clearForm();
+        deleteFiles(newPosters);
+        newPosters.clear();
+        oldPosters.clear();
+        lastPoster = null;
     }
 
     @Override
-    public void UpdateAction() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void createAction() {
+        if (formValid()) {
+            Movie newMovie = new Movie(
+                    -1,
+                    tfTitle.getText().trim(),
+                    tfOriginalTitle.getText().trim(),
+                    taHTMLDescription.getText().trim(),
+                    Integer.valueOf(tfLength.getText().trim()),
+                    tfGenre.getText().trim(),
+                    tfPosterFilePath.getText().trim(),
+                    tfTrailerLink.getText().trim(),
+                    tfLink.getText().trim(),
+                    tfGuid.getText().trim(),
+                    parseDate(tfStartsPlaying.getText().trim())
+            );
+            try {
+                repository.createMovie(newMovie);
+                RefreshData();
+                clearForm();
+
+                deleteFiles(oldPosters);
+                newPosters.clear();
+
+                tbMovies.setRowSelectionInterval(tbMovies.getRowCount() - 1, tbMovies.getRowCount() - 1);
+                fillFormWithSelectedRow();
+
+            } catch (Exception ex) {
+                Logger.getLogger(MovieCRUD.class.getName()).log(Level.SEVERE, null, ex);
+                showDatabaseConnectionError();
+            }
+        }
     }
 
     @Override
-    public void DeleteAction() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void updateAction() {
+        if (formValid()) {
+            Movie newMovie = new Movie(
+                    lastMovie.getIDMovie(),
+                    tfTitle.getText().trim(),
+                    tfOriginalTitle.getText().trim(),
+                    taHTMLDescription.getText().trim(),
+                    Integer.valueOf(tfLength.getText().trim()),
+                    tfGenre.getText().trim(),
+                    tfPosterFilePath.getText().trim(),
+                    tfTrailerLink.getText().trim(),
+                    tfLink.getText().trim(),
+                    tfGuid.getText().trim(),
+                    parseDate(tfStartsPlaying.getText().trim())
+            );
+            try {
+                repository.updateMovie(lastMovie.getIDMovie(), newMovie);
+                movieTableModel.setMovies(repository.selectMovies());
+                clearForm();
+
+                deleteFiles(oldPosters);
+                newPosters.clear();
+
+            } catch (Exception ex) {
+                Logger.getLogger(MovieCRUD.class.getName()).log(Level.SEVERE, null, ex);
+                showDatabaseConnectionError();
+            }
+        }
+    }
+
+    @Override
+    public void deleteAction() {
+        if (MessageUtils.showConfirmDialog(
+                "Delete movie",
+                "Do you really want to delete: " + lastMovie.getTitle()) == JOptionPane.YES_OPTION) {
+            try {
+                repository.deleteMovie(lastMovie.getIDMovie());
+                deleteFiles(newPosters);
+                RefreshData();
+            } catch (Exception ex) {
+                Logger.getLogger(MovieCRUD.class.getName()).log(Level.SEVERE, null, ex);
+                showDatabaseConnectionError();
+            }
+        }
+    }
+
+    @Override
+    public void RefreshData() {
+        try {
+            movieTableModel.setMovies(repository.selectMovies());
+        } catch (Exception ex) {
+            Logger.getLogger(MovieCRUD.class.getName()).log(Level.SEVERE, null, ex);
+            MessageUtils.showErrorMessage("Database Error", "Could not refresh database...");
+        }
+    }
+
+    private void showDatabaseConnectionError() {
+        MessageUtils.showInformationMessage("Database Error", "Could not connect to database, please try again later...");
     }
 }

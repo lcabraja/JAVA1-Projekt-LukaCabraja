@@ -40,17 +40,22 @@ public class PersonCRUD extends javax.swing.JPanel implements Crudable {
     }// </editor-fold>//GEN-END:initComponents
 
     @Override
-    public void CreateAction() {
+    public void createAction() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void UpdateAction() {
+    public void updateAction() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void DeleteAction() {
+    public void deleteAction() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void clearAction() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
