@@ -22,7 +22,6 @@ drop table if exists Actors
 drop table if exists Directors
 drop table if exists Persons
 -----------------------------------------------------
-drop table if exists Genres
 drop table if exists Movie
 go
 -----------------------------------------------------
@@ -90,14 +89,7 @@ create table Directors
 )
 go
 -----------------------------------------------------
-create table Genres
-(
-    IDGenre int identity
-        constraint Genres_pk
-            primary key nonclustered,
-    Title   nvarchar(32) not null
-)
-go
+
 create table Movie
 (
     IDMovie         int identity
@@ -107,7 +99,7 @@ create table Movie
     OriginalTitle   nvarchar(256),
     HTMLDescription nvarchar(4000),
     Length          int,
-    Genre           int,
+    Genre           nvarchar(64),
     PosterFilePath  nvarchar(512),
     TrailerLink     nvarchar(128),
     Link            nvarchar(128),
@@ -138,11 +130,6 @@ create table MovieDirector
     constraint MovieDirector_pk
         primary key nonclustered (MovieID, DirectorID)
 )
-go
------------------------------------------------------
-insert into Roles
-values ('Admin', 100),
-       ('User', 50)
 go
 -----------------------------------------------------
 -- procedure creation
@@ -179,7 +166,6 @@ begin
     delete from Actors
     delete from Directors
     delete from Persons
-    delete from Genres
     delete from Movie
     exec proc_create_default_user
 end
@@ -216,7 +202,7 @@ create proc proc_create_movie @Title nvarchar(256),
                               @OriginalTitle nvarchar(256),
                               @HTMLDescription nvarchar(4000),
                               @Length int,
-                              @Genre nvarchar(32),
+                              @Genre nvarchar(64),
                               @PosterFilePath nvarchar(512),
                               @TrailerLink nvarchar(128),
                               @Link nvarchar(128),
@@ -225,18 +211,8 @@ create proc proc_create_movie @Title nvarchar(256),
                               @MovieID int output
 as
 begin
-    declare @GenreID int
-    if not exists(select IDGenre from Genres where Title = @Genre)
-        begin
-            insert into Genres values (@Genre)
-            set @GenreID = scope_identity()
-        end
-    else
-        begin
-            set @genreId = (select top 1 IDGenre from Genres where Title = @Genre)
-        end
     insert into Movie
-    values (@Title, @OriginalTitle, @HTMLDescription, @Length, @GenreID, @PosterFilePath, @TrailerLink,
+    values (@Title, @OriginalTitle, @HTMLDescription, @Length, @Genre, @PosterFilePath, @TrailerLink,
             @Link, @GUID, @StartsPlaying)
     set @MovieID = scope_identity()
 end
@@ -247,18 +223,17 @@ create proc proc_read_movie @IDMovie int
 as
 begin
     select IDMovie,
-           M.Title,
+           Title,
            OriginalTitle,
            HTMLDescription,
            Length,
-           G.Title  as Genre,
+           Genre,
            PosterFilePath,
            TrailerLink,
            Link,
            GUID,
            StartsPlaying
-    from Movie M
-             full join Genres G on M.Genre = G.IDGenre
+    from Movie
     where IDMovie = @IDMovie
 end
 go
@@ -267,19 +242,18 @@ go
 create proc proc_read_movies
 as
 begin
-        select IDMovie,
-           M.Title,
+    select IDMovie,
+           Title,
            OriginalTitle,
            HTMLDescription,
            Length,
-           G.Title as Genre,
+           Genre,
            PosterFilePath,
            TrailerLink,
            Link,
            GUID,
            StartsPlaying
-    from Movie M
-             full join Genres G on M.Genre = G.IDGenre
+    from Movie
 end
 go
 drop procedure if exists proc_update_movie
@@ -289,7 +263,7 @@ create proc proc_update_movie @IDMovie int,
                               @OriginalTitle nvarchar(256),
                               @HTMLDescription nvarchar(4000),
                               @Length int,
-                              @Genre int,
+                              @Genre nvarchar(64),
                               @PosterFilePath nvarchar(512),
                               @TrailerLink nvarchar(128),
                               @Link nvarchar(128),
