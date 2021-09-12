@@ -28,13 +28,13 @@ public class Login extends javax.swing.JPanel {
 
     Main daddy;
 
-    public Login(Main father) {
+    public Login(Main daddy) {
         initComponents();
-        daddy = father;
+        this.daddy = daddy;
         //TODO REMOVE WHEN DONE WITH TESTING
-        tfUsername.setText("User");
-        checkUsername();
-        pfPassword.setText("password");
+//        tfUsername.setText("User");
+//        checkUsername();
+//        pfPassword.setText("password");
         //checkPassword();
     }
 
