@@ -29,6 +29,21 @@ public class MovieRolesTableModel extends AbstractTableModel {
         fireTableDataChanged();
     }
 
+    public void clearModel() {
+        movie.getActors().clear();
+        movie.getDirectors().clear();
+        fireTableDataChanged();
+    }
+    
+    public void addMovieRole(Role role) {
+        getRoleAccordingToClassType().add(role);
+        fireTableDataChanged();
+    }
+    
+    public boolean contains(Role role) {
+        return getRoleAccordingToClassType().contains(role);
+    }
+    
     private List<Role> getRoleAccordingToClassType() {
         switch (ROLE_TYPE) {
             case Actor:
