@@ -5,8 +5,7 @@
  */
 package hr.algebra.dal;
 
-import hr.algebra.model.Actor;
-import hr.algebra.model.Director;
+import hr.algebra.model.Role;
 import hr.algebra.model.Movie;
 import hr.algebra.model.User;
 import java.util.List;
@@ -17,19 +16,19 @@ import java.util.Optional;
  * @author lcabraja
  */
 public interface Repository {
-    int createActor(Actor actor) throws Exception;
-    void createActors(List<Actor> actors) throws Exception;    
-    void updateActor(int id, Actor data) throws Exception;
+    int createActor(Role actor) throws Exception;
+    void createActors(List<Role> actors) throws Exception;    
+    void updateActor(int id, Role data) throws Exception;
     void deleteActor(int id) throws Exception;
-    Optional<Actor> selectActor(int id) throws Exception;
-    List<Actor> selectActors() throws Exception;
+    Optional<Role> selectActor(int id) throws Exception;
+    List<Role> selectActors() throws Exception;
     
-    int createDirector(Director director) throws Exception;
-    void createDirectors(List<Director> directors) throws Exception;    
-    void updateDirector(int id, Director data) throws Exception;
+    int createDirector(Role director) throws Exception;
+    void createDirectors(List<Role> directors) throws Exception;    
+    void updateDirector(int id, Role data) throws Exception;
     void deleteDirector(int id) throws Exception;
-    Optional<Director> selectDirector(int id) throws Exception;
-    List<Director> selectDirectors() throws Exception;
+    Optional<Role> selectDirector(int id) throws Exception;
+    List<Role> selectDirectors() throws Exception;
     
     int createMovie(Movie movie) throws Exception;
     void createMovies(List<Movie> movies) throws Exception;    
@@ -42,14 +41,14 @@ public interface Repository {
     Optional<User> selectUser(String username) throws Exception;
     
     void createMovieActor(int MovieID, int ActorID) throws Exception;
-    void createMovieActors(int MovieID, List<Actor> actors) throws Exception;    
+    void createMovieActors(int MovieID, List<Role> actors) throws Exception;    
     void deleteMovieActor(int MovieID, int ActorID) throws Exception;
-    List<Actor> selectMovieActors(int MovieID) throws Exception;
+    List<Role> selectMovieActors(int MovieID) throws Exception;
     
     void createMovieDirector(int MovieID, int DirectorID) throws Exception;
-    void createMovieDirectors(int MovieID, List<Director> directors) throws Exception;    
+    void createMovieDirectors(int MovieID, List<Role> directors) throws Exception;    
     void deleteMovieDirector(int MovieID, int DirectorID) throws Exception;
-    List<Director> selectMovieDirectors(int MovieID) throws Exception;
+    List<Role> selectMovieDirectors(int MovieID) throws Exception;
 
     void clearAllData(User user) throws Exception;
 }
