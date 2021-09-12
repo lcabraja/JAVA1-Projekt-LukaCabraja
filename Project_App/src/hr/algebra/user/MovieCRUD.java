@@ -106,6 +106,7 @@ public class MovieCRUD extends javax.swing.JPanel implements Crudable, Refreshab
         btChange = new javax.swing.JButton();
         lbPoster = new javax.swing.JLabel();
 
+        setMinimumSize(new java.awt.Dimension(751, 477));
         setPreferredSize(new java.awt.Dimension(751, 477));
         addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentShown(java.awt.event.ComponentEvent evt) {
@@ -366,7 +367,7 @@ public class MovieCRUD extends javax.swing.JPanel implements Crudable, Refreshab
                             .addComponent(lbErrStartsPlaying)))
                     .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 93, Short.MAX_VALUE))
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -379,7 +380,7 @@ public class MovieCRUD extends javax.swing.JPanel implements Crudable, Refreshab
     }//GEN-LAST:event_tbMoviesMouseClicked
 
     private void formComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentShown
-        clearForm();
+        clearPoster();
     }//GEN-LAST:event_formComponentShown
 
     private void btChangeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btChangeActionPerformed
@@ -569,6 +570,10 @@ public class MovieCRUD extends javax.swing.JPanel implements Crudable, Refreshab
         errorLabels.forEach((component) -> {
             component.setText("");
         });
+        clearPoster();
+    }
+
+    private void clearPoster() {
         try {
             setIcon(lbPoster, "assets" + File.separator + "no_image.jpeg");
         } catch (Exception e) {
