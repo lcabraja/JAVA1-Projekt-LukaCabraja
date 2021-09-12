@@ -6,7 +6,6 @@
 package hr.algebra.model;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.swing.table.AbstractTableModel;
 
 /**
@@ -15,7 +14,7 @@ import javax.swing.table.AbstractTableModel;
  */
 public class MovieTableModel extends AbstractTableModel {
 
-    private static final String[] COLUMN_NAMES = {"IDMovie", "Title", "OriginalTitle", "HTMLDescription", "Length", "Genre", "PosterFilePath", "TrailerLink", "Link", "GUID", "StartsPlaying"};
+    private static final String[] COLUMN_NAMES = {"ID Movie", "Title", "OriginalTitle", "HTMLDescription", "Length", "Genre", "PosterFilePath", "TrailerLink", "Link", "GUID", "StartsPlaying"};
 
     private List<Movie> movies;
 
