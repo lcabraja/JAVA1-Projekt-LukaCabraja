@@ -32,7 +32,6 @@ public class CinestarDownload extends javax.swing.JPanel {
     
     private List<Movie> downloadedMovies;
     private MovieTableModel movieTableModel;
-    private int selectedMovieID;
     
     public CinestarDownload() {
         initComponents();

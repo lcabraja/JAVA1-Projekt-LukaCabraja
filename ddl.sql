@@ -302,11 +302,34 @@ create proc proc_create_actor @Name nvarchar(128),
                               @ActorID int output
 as
 begin
-    insert into Persons
-    values (@Name)
-    insert into Actors (PersonID)
-    values (scope_identity())
-    set @ActorID = scope_identity()
+    if exists(select IDPerson
+              from Persons
+              where FullName = @Name)
+        begin
+            declare @PersonID int = (select IDPerson
+                                     from Persons
+                                     where FullName = @Name)
+            if exists(select IDActor from Actors where PersonID = @PersonID)
+                begin
+                    set @ActorID = (select IDActor from Actors where PersonID = @PersonID)
+                end
+            else
+                begin
+                    insert into Actors (PersonID)
+                    values (@PersonID)
+                    set @ActorID = scope_identity()
+                end
+        end
+    else
+        begin
+
+            insert into Persons
+            values (@Name)
+            insert into Actors (PersonID)
+            values (scope_identity())
+            set @ActorID = scope_identity()
+        end
+
 end
 go
 drop procedure if exists proc_read_actor
@@ -322,14 +345,12 @@ end
 go
 drop procedure if exists proc_read_actors
 go
-create proc proc_read_actors @MovieID int
+create proc proc_read_actors
 as
 begin
     select A.*, P.FullName
     from Persons P
              inner join Actors A on P.IDPerson = A.PersonID
-             inner join MovieActor MA on A.IDActor = MA.ActorID
-    where MovieID = @MovieID
 end
 go
 drop procedure if exists proc_update_actor
@@ -362,11 +383,34 @@ create proc proc_create_director @Name nvarchar(128),
                                  @DirectorID int output
 as
 begin
-    insert into Persons
-    values (@Name)
-    insert into Directors (PersonID)
-    values (scope_identity())
-    set @DirectorID = scope_identity()
+    if exists(select IDPerson
+              from Persons
+              where FullName = @Name)
+        begin
+            declare @PersonID int = (select IDPerson
+                                     from Persons
+                                     where FullName = @Name)
+            if exists(select IDDirector from Directors where PersonID = @PersonID)
+                begin
+                    set @DirectorID = (select IDDirector from Directors where PersonID = @PersonID)
+                end
+            else
+                begin
+                    insert into Directors (PersonID)
+                    values (@PersonID)
+                    set @DirectorID = scope_identity()
+                end
+        end
+    else
+        begin
+
+            insert into Persons
+            values (@Name)
+            insert into Directors (PersonID)
+            values (scope_identity())
+            set @DirectorID = scope_identity()
+        end
+
 end
 go
 drop procedure if exists proc_read_director
@@ -382,14 +426,12 @@ end
 go
 drop procedure if exists proc_read_directors
 go
-create proc proc_read_directors @MovieID int
+create proc proc_read_directors
 as
 begin
     select D.*, P.FullName
     from Persons P
              inner join Directors D on P.IDPerson = D.PersonID
-             inner join MovieDirector MA on D.IDDirector = MA.DirectorID
-    where MA.MovieID = @MovieID
 end
 go
 drop procedure if exists proc_update_director
