@@ -23,7 +23,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -111,6 +110,9 @@ public class MovieCRUD extends javax.swing.JPanel implements Crudable, Refreshab
         addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentShown(java.awt.event.ComponentEvent evt) {
                 formComponentShown(evt);
+            }
+            public void componentHidden(java.awt.event.ComponentEvent evt) {
+                formComponentHidden(evt);
             }
         });
 
@@ -414,6 +416,10 @@ public class MovieCRUD extends javax.swing.JPanel implements Crudable, Refreshab
         }
     }//GEN-LAST:event_btChangeActionPerformed
 
+    private void formComponentHidden(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentHidden
+        clearAction();
+    }//GEN-LAST:event_formComponentHidden
+
     // <editor-fold defaultstate="collapsed" desc="Variables declaration">
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btChange;
@@ -583,7 +589,6 @@ public class MovieCRUD extends javax.swing.JPanel implements Crudable, Refreshab
     private void deleteFiles(List<String> files) {
         files.forEach((poster) -> {
             try {
-                System.out.println(poster);
                 new File(poster).delete();
             } catch (Exception e) {
             }
@@ -629,6 +634,7 @@ public class MovieCRUD extends javax.swing.JPanel implements Crudable, Refreshab
 
     @Override
     public void clearAction() {
+        tbMovies.clearSelection();
         clearForm();
         deleteFiles(newPosters);
         newPosters.clear();
@@ -654,7 +660,7 @@ public class MovieCRUD extends javax.swing.JPanel implements Crudable, Refreshab
             );
             try {
                 repository.createMovie(newMovie);
-                RefreshData();
+                refreshData();
                 clearForm();
 
                 deleteFiles(oldPosters);
@@ -709,7 +715,7 @@ public class MovieCRUD extends javax.swing.JPanel implements Crudable, Refreshab
             try {
                 repository.deleteMovie(lastMovie.getIDMovie());
                 deleteFiles(newPosters);
-                RefreshData();
+                refreshData();
             } catch (Exception ex) {
                 Logger.getLogger(MovieCRUD.class.getName()).log(Level.SEVERE, null, ex);
                 showDatabaseConnectionError();
@@ -718,7 +724,7 @@ public class MovieCRUD extends javax.swing.JPanel implements Crudable, Refreshab
     }
 
     @Override
-    public void RefreshData() {
+    public void refreshData() {
         try {
             movieTableModel.setMovies(repository.selectMovies());
         } catch (Exception ex) {
