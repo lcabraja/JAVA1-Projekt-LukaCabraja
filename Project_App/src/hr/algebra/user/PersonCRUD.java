@@ -9,7 +9,11 @@ import hr.algebra.dal.Repository;
 import hr.algebra.dal.RepositoryFactory;
 import hr.algebra.model.Movie;
 import hr.algebra.model.MovieTableModel;
+import hr.algebra.model.MovieRolesTableModel;
+import hr.algebra.model.MovieShortTableModel;
 import hr.algebra.model.Role;
+import hr.algebra.model.RoleTableModel;
+import hr.algebra.model.RoleTypes;
 import hr.algebra.utils.IconUtils;
 import hr.algebra.utils.MessageUtils;
 import java.io.File;
@@ -34,16 +38,16 @@ import javax.swing.text.JTextComponent;
  */
 public class PersonCRUD extends javax.swing.JPanel implements Crudable {
 
-    private final String roleType;
+    private final RoleTypes ROLE_TYPE;
 
     /**
      * Creates new form PersonCRUD
      *
      * @param roleType
      */
-    public PersonCRUD(String roleType) {
+    public PersonCRUD(RoleTypes roleType) {
         initComponents();
-        this.roleType = roleType;
+        this.ROLE_TYPE = roleType;
         init();
     }
 
@@ -300,19 +304,19 @@ public class PersonCRUD extends javax.swing.JPanel implements Crudable {
         tbPeople.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tbPeople.setAutoCreateRowSorter(true);
         tbPeople.setRowHeight(25);
-        peopleTableModel = new PeopleTableModel(repository.selectMovies());
+        peopleTableModel = new RoleTableModel(null, ROLE_TYPE);
         tbPeople.setModel(peopleTableModel);
 
         tbMoviesPeople.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tbMoviesPeople.setAutoCreateRowSorter(true);
         tbMoviesPeople.setRowHeight(25);
-        moviesPeopleTableModel = new MoviesPeopleTableModel(repository.selectMovies());
+        moviesPeopleTableModel = new MovieRolesTableModel(null, ROLE_TYPE);
         tbMoviesPeople.setModel(moviesPeopleTableModel);
 
         tbMoviesShort.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tbMoviesShort.setAutoCreateRowSorter(true);
         tbMoviesShort.setRowHeight(25);
-        moviesShortTableModel = new MoviesShortTableModel(repository.selectMovies());
+        moviesShortTableModel = new MovieShortTableModel(repository.selectMovies());
         tbMoviesShort.setModel(moviesShortTableModel);
     }
 
