@@ -29,10 +29,10 @@ public class CinestarDownload extends javax.swing.JPanel {
      * Creates new form CinestarDownload
      */
     private Repository repository;
-    
+
     private List<Movie> downloadedMovies;
     private MovieTableModel movieTableModel;
-    
+
     public CinestarDownload() {
         initComponents();
         init();
@@ -111,20 +111,28 @@ public class CinestarDownload extends javax.swing.JPanel {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         try {
+            jButton1.setEnabled(false);
+            jButton1.setText("Uploading...");
             downloadedMovies = MovieParser.parse();
             movieTableModel.setMovies(downloadedMovies);
             jButton2.setEnabled(true);
         } catch (IOException | XMLStreamException ex) {
             Logger.getLogger(CinestarDownload.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            jButton1.setEnabled(true);
+            jButton1.setText("Download RSS");
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        try {
-            repository.createMovies(downloadedMovies);
-        } catch (Exception ex) {
-            Logger.getLogger(CinestarDownload.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        new Thread(() -> {
+            try {
+                repository.createMovies(downloadedMovies);
+                MessageUtils.showInformationMessage("Database upload", "Upload to database complete.");
+            } catch (Exception ex) {
+                Logger.getLogger(CinestarDownload.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }).start();
     }//GEN-LAST:event_jButton2ActionPerformed
 
 
@@ -145,11 +153,11 @@ public class CinestarDownload extends javax.swing.JPanel {
             System.exit(1);
         }
     }
-    
+
     private void initRepository() throws Exception {
         repository = RepositoryFactory.getRepository();
     }
-    
+
     private void initTables() throws Exception {
         tbMovies.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tbMovies.setAutoCreateRowSorter(true);
