@@ -5,18 +5,57 @@
  */
 package hr.algebra.user;
 
+import hr.algebra.dal.Repository;
+import hr.algebra.dal.RepositoryFactory;
+import hr.algebra.model.Movie;
+import hr.algebra.model.MovieTableModel;
+import hr.algebra.model.Role;
+import hr.algebra.utils.IconUtils;
+import hr.algebra.utils.MessageUtils;
+import java.io.File;
+import java.io.IOException;
+import java.sql.Date;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.text.JTextComponent;
+
 /**
  *
  * @author lcabraja
  */
 public class PersonCRUD extends javax.swing.JPanel implements Crudable {
 
+    private final String roleType;
+
     /**
      * Creates new form PersonCRUD
+     *
+     * @param roleType
      */
-    public PersonCRUD() {
+    public PersonCRUD(String roleType) {
         initComponents();
+        this.roleType = roleType;
+        init();
     }
+
+    private List<JTextComponent> validationFields;
+    private List<Integer> validationLengths;
+    private List<JLabel> errorLabels;
+
+    private Repository repository;
+
+    private AbstractTableModel peopleTableModel;
+    private AbstractTableModel moviesPeopleTableModel;
+    private AbstractTableModel moviesShortTableModel;
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -27,17 +66,305 @@ public class PersonCRUD extends javax.swing.JPanel implements Crudable {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        lbRoleID = new javax.swing.JLabel();
+        lbErrRoleID = new javax.swing.JLabel();
+        tfRoleID = new javax.swing.JTextField();
+        lbPersonID = new javax.swing.JLabel();
+        lbErrPersonID = new javax.swing.JLabel();
+        tfPersonID = new javax.swing.JTextField();
+        lbAlternateName = new javax.swing.JLabel();
+        lbErrAlternateName = new javax.swing.JLabel();
+        tfAlternateName = new javax.swing.JTextField();
+        lbFullName = new javax.swing.JLabel();
+        lbErrFullName = new javax.swing.JLabel();
+        tfFullName = new javax.swing.JTextField();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tbPeople = new javax.swing.JTable();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        tbMoviesShort = new javax.swing.JTable();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        tbMoviesPeople = new javax.swing.JTable();
+
+        setMinimumSize(new java.awt.Dimension(751, 477));
+        setPreferredSize(new java.awt.Dimension(751, 477));
+
+        lbRoleID.setText("ID");
+
+        lbErrRoleID.setText("X");
+
+        tfRoleID.setText("jTextField1");
+
+        lbPersonID.setText("PersonID");
+
+        lbErrPersonID.setText("X");
+
+        tfPersonID.setText("jTextField1");
+
+        lbAlternateName.setText("Alternate Name");
+
+        lbErrAlternateName.setText("X");
+
+        tfAlternateName.setText("jTextField1");
+
+        lbFullName.setText("Full Name");
+
+        lbErrFullName.setText("X");
+
+        tfFullName.setText("jTextField1");
+
+        tbPeople.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        tbPeople.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tbPeopleMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(tbPeople);
+
+        tbMoviesShort.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        tbMoviesShort.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tbMoviesShortMouseClicked(evt);
+            }
+        });
+        jScrollPane2.setViewportView(tbMoviesShort);
+
+        tbMoviesPeople.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        tbMoviesPeople.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tbMoviesPeopleMouseClicked(evt);
+            }
+        });
+        jScrollPane3.setViewportView(tbMoviesPeople);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lbAlternateName)
+                            .addComponent(lbPersonID)
+                            .addComponent(lbRoleID)
+                            .addComponent(lbFullName))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(tfFullName, javax.swing.GroupLayout.DEFAULT_SIZE, 250, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(lbErrFullName))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(tfRoleID)
+                                    .addComponent(tfPersonID)
+                                    .addComponent(tfAlternateName))
+                                .addGap(12, 12, 12)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(lbErrAlternateName)
+                                    .addComponent(lbErrPersonID)
+                                    .addComponent(lbErrRoleID))))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 360, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 360, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lbRoleID)
+                            .addComponent(tfRoleID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lbErrRoleID))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lbPersonID)
+                            .addComponent(tfPersonID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lbErrPersonID))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lbAlternateName)
+                            .addComponent(tfAlternateName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lbErrAlternateName))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lbFullName)
+                            .addComponent(tfFullName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lbErrFullName))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 225, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 234, javax.swing.GroupLayout.PREFERRED_SIZE))))
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void tbPeopleMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbPeopleMouseClicked
+        getSelectedTableItemID(tbPeople, peopleTableModel);
+    }//GEN-LAST:event_tbPeopleMouseClicked
+
+    private void tbMoviesPeopleMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbMoviesPeopleMouseClicked
+        getSelectedTableItemID(tbMoviesPeople, moviesPeopleTableModel);
+    }//GEN-LAST:event_tbMoviesPeopleMouseClicked
+
+    private void tbMoviesShortMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbMoviesShortMouseClicked
+        getSelectedTableItemID(tbMoviesShort, moviesShortTableModel);
+    }//GEN-LAST:event_tbMoviesShortMouseClicked
+
+    // <editor-fold defaultstate="collapsed" desc="Variables declaration">
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JLabel lbAlternateName;
+    private javax.swing.JLabel lbErrAlternateName;
+    private javax.swing.JLabel lbErrFullName;
+    private javax.swing.JLabel lbErrPersonID;
+    private javax.swing.JLabel lbErrRoleID;
+    private javax.swing.JLabel lbFullName;
+    private javax.swing.JLabel lbPersonID;
+    private javax.swing.JLabel lbRoleID;
+    private javax.swing.JTable tbMoviesPeople;
+    private javax.swing.JTable tbMoviesShort;
+    private javax.swing.JTable tbPeople;
+    private javax.swing.JTextField tfAlternateName;
+    private javax.swing.JTextField tfFullName;
+    private javax.swing.JTextField tfPersonID;
+    private javax.swing.JTextField tfRoleID;
+    // End of variables declaration//GEN-END:variables
+    // </editor-fold>
+
+    private void init() {
+        try {
+            initValidation();
+            initRepository();
+            initTables();
+            initFields();
+            clearForm();
+
+        } catch (Exception ex) {
+            Logger.getLogger(MovieCRUD.class.getName()).log(Level.SEVERE, null, ex);
+            MessageUtils.showErrorMessage("Unrecoverable error", "Cannot initiate the form");
+            System.exit(1);
+        }
+    }
+
+    private void initValidation() {
+        validationFields = Arrays.asList(tfRoleID, tfPersonID, tfAlternateName, tfFullName);
+        validationLengths = Arrays.asList(-1, -1, 128, 128);
+        errorLabels = Arrays.asList(lbErrRoleID, lbErrPersonID, lbErrAlternateName, lbErrFullName);
+    }
+
+    private void initRepository() throws Exception {
+        repository = RepositoryFactory.getRepository();
+    }
+
+    private void initTables() throws Exception {
+        tbPeople.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        tbPeople.setAutoCreateRowSorter(true);
+        tbPeople.setRowHeight(25);
+        peopleTableModel = new PeopleTableModel(repository.selectMovies());
+        tbPeople.setModel(peopleTableModel);
+
+        tbMoviesPeople.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        tbMoviesPeople.setAutoCreateRowSorter(true);
+        tbMoviesPeople.setRowHeight(25);
+        moviesPeopleTableModel = new MoviesPeopleTableModel(repository.selectMovies());
+        tbMoviesPeople.setModel(moviesPeopleTableModel);
+
+        tbMoviesShort.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        tbMoviesShort.setAutoCreateRowSorter(true);
+        tbMoviesShort.setRowHeight(25);
+        moviesShortTableModel = new MoviesShortTableModel(repository.selectMovies());
+        tbMoviesShort.setModel(moviesShortTableModel);
+    }
+
+    private void initFields() {
+//        oldPosters = new ArrayList<>();
+//        newPosters = new ArrayList<>();
+//        lastPoster = null;
+    }
+
+    private boolean formValid() {
+        boolean ok = true;
+        boolean condition;
+        for (int i = 0; i < validationFields.size(); i++) {
+            condition = validationLengths.get(i) > 0 ? validationLengths.get(i) >= validationFields.get(i).getText().trim().length() : true;
+
+            //int min = validationFields.get(i).getText().length();
+            //min = min > 10 ? 10 : min;
+            //System.out.println(validationFields.get(i).getText().substring(0, min) + " | " + validationLengths.get(i) + " >= " + validationFields.get(i).getText().trim().length() + " = " + condition);
+            ok &= condition;
+            errorLabels.get(i).setText(!condition ? "X" : "");
+            if (!ok) {
+            }
+        }
+        return ok;
+    }
+
+    private void clearForm() {
+        validationFields.forEach((component) -> {
+            component.setText("");
+        });
+        errorLabels.forEach((component) -> {
+            component.setText("");
+        });
+    }
+
+    private int getSelectedTableItemID(JTable tableClicked, AbstractTableModel modelReference) {
+        int selectedRow = tableClicked.getSelectedRow();
+        int rowIndex = tableClicked.convertRowIndexToModel(selectedRow);
+        int selectedItemID = (int) modelReference.getValueAt(rowIndex, 0);
+        return selectedItemID;
+    }
+
+    private void fillForm(Role role) {
+        tfRoleID.setText(String.valueOf(role.getIdRole()));
+        tfPersonID.setText(String.valueOf(role.getPersonID()));
+        tfAlternateName.setText(role.getAlternateName());
+        tfFullName.setText(role.getFullName());
+    }
+    
+    private void fillMoviesRolesTable(List<Role> roles) {
+        
+    }
 
     @Override
     public void createAction() {
@@ -58,8 +385,4 @@ public class PersonCRUD extends javax.swing.JPanel implements Crudable {
     public void clearAction() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
-
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    // End of variables declaration//GEN-END:variables
 }
