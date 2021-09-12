@@ -36,15 +36,15 @@ public class MovieRolesTableModel extends AbstractTableModel {
     }
     
     public void addMovieRole(Role role) {
-        getRoleAccordingToClassType().add(role);
+        getRolesAccordingToClassType().add(role);
         fireTableDataChanged();
     }
     
     public boolean contains(Role role) {
-        return getRoleAccordingToClassType().contains(role);
+        return getRolesAccordingToClassType().contains(role);
     }
     
-    private List<Role> getRoleAccordingToClassType() {
+    private List<Role> getRolesAccordingToClassType() {
         switch (ROLE_TYPE) {
             case Actor:
                 return movie.getActors();
@@ -57,7 +57,7 @@ public class MovieRolesTableModel extends AbstractTableModel {
 
     @Override
     public int getRowCount() {
-        return getRoleAccordingToClassType().size();
+        return getRolesAccordingToClassType().size();
     }
 
     @Override
@@ -73,9 +73,9 @@ public class MovieRolesTableModel extends AbstractTableModel {
             case 1:
                 return movie.getTitle();
             case 2:
-                return getRoleAccordingToClassType().get(rowIndex).getIdRole();
+                return getRolesAccordingToClassType().get(rowIndex).getIdRole();
             case 3:
-                return getRoleAccordingToClassType().get(rowIndex).getFullName();
+                return getRolesAccordingToClassType().get(rowIndex).getFullName();
             default:
                 throw new RuntimeException("No such column");
         }
