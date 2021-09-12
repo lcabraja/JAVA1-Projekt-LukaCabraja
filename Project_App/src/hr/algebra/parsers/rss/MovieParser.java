@@ -7,8 +7,7 @@ package hr.algebra.parsers.rss;
 
 import hr.algebra.factory.ParserFactory;
 import hr.algebra.factory.UrlConnectionFactory;
-import hr.algebra.model.Actor;
-import hr.algebra.model.Director;
+import hr.algebra.model.Role;
 import hr.algebra.model.Movie;
 import hr.algebra.utils.FileUtils;
 import java.io.File;
@@ -155,21 +154,21 @@ public class MovieParser {
     }
 
     // todo genericify
-    private static List<Actor> objectifyActors(List<String> people) {
-        List<Actor> actors = new ArrayList<>();
-        Actor actor;
+    private static List<Role> objectifyActors(List<String> people) {
+        List<Role> actors = new ArrayList<>();
+        Role actor;
         for (String name : people) {
-            actor = new Actor(name);
+            actor = new Role(name);
             actors.add(actor);
         }
         return actors;
     }
 
-    private static List<Director> objectifyDirectors(List<String> people) {
-        List<Director> directors = new ArrayList<>();
-        Director director;
+    private static List<Role> objectifyDirectors(List<String> people) {
+        List<Role> directors = new ArrayList<>();
+        Role director;
         for (String name : people) {
-            director = new Director(name);
+            director = new Role(name);
             directors.add(director);
         }
         return directors;
