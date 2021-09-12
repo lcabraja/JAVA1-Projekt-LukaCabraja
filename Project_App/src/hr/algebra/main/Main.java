@@ -9,13 +9,15 @@ import hr.algebra.admin.CinestarDownload;
 import hr.algebra.dal.Repository;
 import hr.algebra.dal.RepositoryFactory;
 import hr.algebra.login.Login;
-import hr.algebra.model.Role;
+import hr.algebra.model.Movie;
+import hr.algebra.model.MovieArchive;
 import hr.algebra.model.RoleTypes;
 import hr.algebra.model.User;
 import hr.algebra.user.Crudable;
 import hr.algebra.user.Refreshable;
 import hr.algebra.user.MovieCRUD;
 import hr.algebra.user.PersonCRUD;
+import hr.algebra.utils.JAXBUtils;
 import hr.algebra.utils.MessageUtils;
 import java.awt.event.ActionEvent;
 import java.util.Arrays;
@@ -25,15 +27,16 @@ import java.util.logging.Logger;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+import javax.xml.bind.JAXBException;
 
 /**
  *
  * @author lcabraja
  */
 public class Main extends javax.swing.JFrame {
+
+    private static final String FILENAME = "moviearchive.xml";
 
     /**
      * Creates new form Main
@@ -57,6 +60,8 @@ public class Main extends javax.swing.JFrame {
     private List<Crudable> userCrudables;
     private List<Refreshable> userRefreshables;
     private List<String> userTabNames;
+
+    private List<Movie> movies;
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -137,7 +142,18 @@ public class Main extends javax.swing.JFrame {
     }//GEN-LAST:event_miExitActionPerformed
 
     private void miDownloadXMLActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miDownloadXMLActionPerformed
-        // TODO add your handling code here:
+        new Thread(() -> {
+            try {
+                MessageUtils.showInformationMessage("XML Download", "Press OK to begin XML download...");
+                JAXBUtils.save(new MovieArchive(repository.selectMoviesFull()), FILENAME);
+                MessageUtils.showInformationMessage("Info", "Papers saved");
+            } catch (JAXBException ex) {
+                MessageUtils.showErrorMessage("Error", "Unable to save papers");
+                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (Exception ex) {
+                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }).start();
     }//GEN-LAST:event_miDownloadXMLActionPerformed
 
     private void miRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miRefreshActionPerformed
@@ -327,20 +343,23 @@ public class Main extends javax.swing.JFrame {
 
     public void userLoggedIn(User user) {
         this.user = user;
-        setCurrentAccountMenu();
-
         if ("Admin".equals(user.getRole())) {
             createAdminPanels();
             setAdminTabs();
             setAdminMenu();
         } else {
-            createUserPanels();
-            selectedCrudable = movieCrud;
-            selectedRefreshable = movieCrud;
-            setUserTabs();
-            setUserMenu("movie");
-            prepareTabs();
+            new Thread(() -> {
+                setTitle("Logging in...");
+                createUserPanels();
+                selectedCrudable = movieCrud;
+                selectedRefreshable = movieCrud;
+                setUserTabs();
+                setUserMenu("movie");
+                prepareTabs();
+                setTitle("JAVA1DB");
+            }).start();
         }
+        setCurrentAccountMenu();
     }
 
     public void userLoggedOut() {
