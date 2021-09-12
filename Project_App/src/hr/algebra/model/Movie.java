@@ -17,149 +17,149 @@ import java.util.Objects;
  */
 public class Movie {
 
-    private int IDMovie;
-    private String Title;
-    private String OriginalTitle;
-    private String HTMLDescription;
-    private int Length;
-    private String Genre;
-    private String PosterFilePath;
-    private String TrailerLink;
-    private String Link;
-    private String GUID;
-    private Date StartsPlaying;
-    private List<Actor> Actors;
-    private List<Director> Directors;
+    private int idMovie;
+    private String title;
+    private String originalTitle;
+    private String htmlDescription;
+    private int length;
+    private String genre;
+    private String posterFilePath;
+    private String trailerLink;
+    private String link;
+    private String guid;
+    private Date startsPlaying;
+    private List<Role> actors;
+    private List<Role> directors;
 
     public Movie() {
-        Actors = new ArrayList<>();
-        Directors = new ArrayList<>();
+        actors = new ArrayList<>();
+        directors = new ArrayList<>();
     }
 
-    public Movie(String Title, String OriginalTitle, String HTMLDescription, int Length, String Genre, String PosterFilePath, String TrailerLink, String Link, String GUID, Date StartsPlaying) {
+    public Movie(String title, String originalTitle, String htmlDescription, int length, String genre, String posterFilePath, String trailerLink, String link, String guid, Date startsPlaying) {
         this();
-        this.Title = Title;
-        this.OriginalTitle = OriginalTitle;
-        this.HTMLDescription = HTMLDescription;
-        this.Length = Length;
-        this.Genre = Genre;
-        this.PosterFilePath = PosterFilePath;
-        this.TrailerLink = TrailerLink;
-        this.Link = Link;
-        this.GUID = GUID;
-        this.StartsPlaying = StartsPlaying;
+        this.title = title;
+        this.originalTitle = originalTitle;
+        this.htmlDescription = htmlDescription;
+        this.length = length;
+        this.genre = genre;
+        this.posterFilePath = posterFilePath;
+        this.trailerLink = trailerLink;
+        this.link = link;
+        this.guid = guid;
+        this.startsPlaying = startsPlaying;
     }
 
-    public Movie(int IDMovie, String Title, String OriginalTitle, String HTMLDescription, int Length, String Genre, String PosterFilePath, String TrailerLink, String Link, String GUID, Date StartsPlaying) {
-        this(Title, OriginalTitle, HTMLDescription, Length, Genre, PosterFilePath, TrailerLink, Link, GUID, StartsPlaying);
-        this.IDMovie = IDMovie;
+    public Movie(int IDMovie, String title, String originalTitle, String htmlDescription, int length, String genre, String posterFilePath, String trailerLink, String link, String guid, Date startsPlaying) {
+        this(title, originalTitle, htmlDescription, length, genre, posterFilePath, trailerLink, link, guid, startsPlaying);
+        this.idMovie = IDMovie;
     }
 
-    public List<Actor> getActors() {
-        return Actors;
+    public List<Role> getActors() {
+        return actors;
     }
 
-    public void setActors(List<Actor> Actors) {
-        this.Actors = Actors;
+    public void setActors(List<Role> actors) {
+        this.actors = actors;
     }
 
-    public List<Director> getDirectors() {
-        return Directors;
+    public List<Role> getDirectors() {
+        return directors;
     }
 
-    public void setDirectors(List<Director> Directors) {
-        this.Directors = Directors;
+    public void setDirectors(List<Role> directors) {
+        this.directors = directors;
     }
 
     public int getIDMovie() {
-        return IDMovie;
+        return idMovie;
     }
 
     public String getTitle() {
-        return Title;
+        return title;
     }
 
     public String getOriginalTitle() {
-        return OriginalTitle;
+        return originalTitle;
     }
 
     public String getHTMLDescription() {
-        return HTMLDescription;
+        return htmlDescription;
     }
 
     public int getLength() {
-        return Length;
+        return length;
     }
 
     public String getGenre() {
-        return Genre;
+        return genre;
     }
 
     public String getPosterFilePath() {
-        return PosterFilePath;
+        return posterFilePath;
     }
 
     public String getTrailerLink() {
-        return TrailerLink;
+        return trailerLink;
     }
 
     public String getLink() {
-        return Link;
+        return link;
     }
 
     public String getGUID() {
-        return GUID;
+        return guid;
     }
 
     public Date getStartsPlaying() {
-        return StartsPlaying;
+        return startsPlaying;
     }
 
-    public void setTitle(String Title) {
-        this.Title = Title;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public void setOriginalTitle(String OriginalTitle) {
-        this.OriginalTitle = OriginalTitle;
+    public void setOriginalTitle(String originalTitle) {
+        this.originalTitle = originalTitle;
     }
 
-    public void setHTMLDescription(String HTMLDescription) {
-        this.HTMLDescription = HTMLDescription;
+    public void setHTMLDescription(String htmlDescription) {
+        this.htmlDescription = htmlDescription;
     }
 
-    public void setLength(int Length) {
-        this.Length = Length;
+    public void setLength(int length) {
+        this.length = length;
     }
 
-    public void setGenre(String Genre) {
-        this.Genre = Genre;
+    public void setGenre(String genre) {
+        this.genre = genre;
     }
 
-    public void setPosterFilePath(String PosterFilePath) {
-        this.PosterFilePath = PosterFilePath;
+    public void setPosterFilePath(String posterFilePath) {
+        this.posterFilePath = posterFilePath;
     }
 
-    public void setTrailerLink(String TrailerLink) {
-        this.TrailerLink = TrailerLink;
+    public void setTrailerLink(String trailerLink) {
+        this.trailerLink = trailerLink;
     }
 
-    public void setLink(String Link) {
-        this.Link = Link;
+    public void setLink(String link) {
+        this.link = link;
     }
 
-    public void setGUID(String GUID) {
-        this.GUID = GUID;
+    public void setGUID(String guid) {
+        this.guid = guid;
     }
 
-    public void setStartsPlaying(Date StartsPlaying) {
-        this.StartsPlaying = StartsPlaying;
+    public void setStartsPlaying(Date startsPlaying) {
+        this.startsPlaying = startsPlaying;
     }
 
     @Override
     public int hashCode() {
         int hash = 5;
-        hash = 67 * hash + this.IDMovie;
-        hash = 67 * hash + Objects.hashCode(this.Title);
+        hash = 67 * hash + this.idMovie;
+        hash = 67 * hash + Objects.hashCode(this.title);
         return hash;
     }
 
@@ -175,7 +175,7 @@ public class Movie {
             return false;
         }
         final Movie other = (Movie) obj;
-        if (this.IDMovie != other.IDMovie) {
+        if (this.idMovie != other.idMovie) {
             return false;
         }
         return true;
@@ -183,6 +183,6 @@ public class Movie {
 
     @Override
     public String toString() {
-        return "Movie{" + "IDMovie=" + IDMovie + ", Title=" + Title + ", OriginalTitle=" + OriginalTitle + ", HTMLDescription=" + HTMLDescription + ", Length=" + Length + ", Genre=" + Genre + ", PosterFilePath=" + PosterFilePath + ", TrailerLink=" + TrailerLink + ", Link=" + Link + ", GUID=" + GUID + ", StartsPlaying=" + StartsPlaying + '}';
-    }
+        return "Movie{" + "idMovie=" + idMovie + ", title=" + title + ", originalTitle=" + originalTitle + ", htmlDescription=" + htmlDescription + ", length=" + length + ", genre=" + genre + ", posterFilePath=" + posterFilePath + ", trailerLink=" + trailerLink + ", link=" + link + ", guid=" + guid + ", startsPlaying=" + startsPlaying + ", actors=" + actors + ", directors=" + directors + '}';
+    }   
 }
