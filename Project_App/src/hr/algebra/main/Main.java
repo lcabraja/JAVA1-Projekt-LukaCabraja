@@ -10,6 +10,7 @@ import hr.algebra.dal.Repository;
 import hr.algebra.dal.RepositoryFactory;
 import hr.algebra.login.Login;
 import hr.algebra.model.Role;
+import hr.algebra.model.RoleTypes;
 import hr.algebra.model.User;
 import hr.algebra.user.Crudable;
 import hr.algebra.user.Refreshable;
@@ -17,11 +18,16 @@ import hr.algebra.user.MovieCRUD;
 import hr.algebra.user.PersonCRUD;
 import hr.algebra.utils.MessageUtils;
 import java.awt.event.ActionEvent;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 /**
  *
@@ -48,6 +54,10 @@ public class Main extends javax.swing.JFrame {
     private Crudable selectedCrudable;
     private Refreshable selectedRefreshable;
 
+    private List<Crudable> userCrudables;
+    private List<Refreshable> userRefreshables;
+    private List<String> userTabNames;
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -61,9 +71,9 @@ public class Main extends javax.swing.JFrame {
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jCheckBoxMenuItem1 = new javax.swing.JCheckBoxMenuItem();
-        jMenuItem2 = new javax.swing.JMenuItem();
-        jMenuItem1 = new javax.swing.JMenuItem();
-        jMenuItem6 = new javax.swing.JMenuItem();
+        miRefresh = new javax.swing.JMenuItem();
+        miDownloadXML = new javax.swing.JMenuItem();
+        miExit = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -76,29 +86,29 @@ public class Main extends javax.swing.JFrame {
         jCheckBoxMenuItem1.setText("Fidget Toggler");
         jMenu1.add(jCheckBoxMenuItem1);
 
-        jMenuItem2.setText("Refresh");
-        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+        miRefresh.setText("Refresh");
+        miRefresh.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem2ActionPerformed(evt);
+                miRefreshActionPerformed(evt);
             }
         });
-        jMenu1.add(jMenuItem2);
+        jMenu1.add(miRefresh);
 
-        jMenuItem1.setText("Download XML");
-        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+        miDownloadXML.setText("Download XML");
+        miDownloadXML.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem1ActionPerformed(evt);
+                miDownloadXMLActionPerformed(evt);
             }
         });
-        jMenu1.add(jMenuItem1);
+        jMenu1.add(miDownloadXML);
 
-        jMenuItem6.setText("Exit");
-        jMenuItem6.addActionListener(new java.awt.event.ActionListener() {
+        miExit.setText("Exit");
+        miExit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem6ActionPerformed(evt);
+                miExitActionPerformed(evt);
             }
         });
-        jMenu1.add(jMenuItem6);
+        jMenu1.add(miExit);
 
         jMenuBar1.add(jMenu1);
 
@@ -122,17 +132,17 @@ public class Main extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
+    private void miExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miExitActionPerformed
         System.exit(0);
-    }//GEN-LAST:event_jMenuItem6ActionPerformed
+    }//GEN-LAST:event_miExitActionPerformed
 
-    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+    private void miDownloadXMLActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miDownloadXMLActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jMenuItem1ActionPerformed
+    }//GEN-LAST:event_miDownloadXMLActionPerformed
 
-    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
-        selectedRefreshable.RefreshData();
-    }//GEN-LAST:event_jMenuItem2ActionPerformed
+    private void miRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miRefreshActionPerformed
+        selectedRefreshable.refreshData();
+    }//GEN-LAST:event_miRefreshActionPerformed
 
     /**
      * @param args the command line arguments
@@ -165,22 +175,23 @@ public class Main extends javax.swing.JFrame {
         });
     }
 
+    //<editor-fold defaultstate="collapsed" desc="Variable Declaration">
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItem1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JMenuItem jMenuItem2;
-    private javax.swing.JMenuItem jMenuItem6;
     private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JMenuItem miDownloadXML;
+    private javax.swing.JMenuItem miExit;
+    private javax.swing.JMenuItem miRefresh;
     // End of variables declaration//GEN-END:variables
+    //</editor-fold>
 
     private void init() {
         try {
             initWindow();
             initRepository();
-
             setCurrentAccountMenu();
             createPanels();
             setLoginTabs();
@@ -192,6 +203,21 @@ public class Main extends javax.swing.JFrame {
     private void initWindow() {
         setLocationRelativeTo(null);
         setTitle("JAVA1DB");
+    }
+
+    private void prepareTabs() {
+        userCrudables = Arrays.asList(movieCrud, actorCrud, directorCrud);
+        userRefreshables = Arrays.asList(movieCrud, actorCrud, directorCrud);
+        userTabNames = Arrays.asList("movie", "actor", "director");
+
+        jTabbedPane1.addChangeListener((ChangeEvent e) -> {
+            final int selectedIndex = jTabbedPane1.getSelectedIndex();
+            if (selectedIndex >= 0) {
+                selectedCrudable = userCrudables.get(selectedIndex);
+                selectedRefreshable = userRefreshables.get(selectedIndex);
+                setUserMenu(userTabNames.get(selectedIndex));
+            }
+        });
     }
 
     private void initRepository() throws Exception {
@@ -222,11 +248,16 @@ public class Main extends javax.swing.JFrame {
 
     private void createPanels() {
         loginForm = new Login(this);
+    }
+
+    private void createAdminPanels() {
         cinestarDownload = new CinestarDownload();
+    }
+
+    private void createUserPanels() {
         movieCrud = new MovieCRUD();
-        actorCrud = new PersonCRUD("Actor");
-        directorCrud = new PersonCRUD("Director");
-        
+        actorCrud = new PersonCRUD(RoleTypes.Actor);
+        directorCrud = new PersonCRUD(RoleTypes.Director);
     }
 
     private void setLoginTabs() {
@@ -242,6 +273,8 @@ public class Main extends javax.swing.JFrame {
     private void setUserTabs() {
         jTabbedPane1.removeAll();
         jTabbedPane1.addTab("Movie CRUD", movieCrud);
+        jTabbedPane1.addTab("Actor CRUD", actorCrud);
+        jTabbedPane1.addTab("Director CRUD", directorCrud);
     }
 
     private void setAdminMenu() {
@@ -283,12 +316,12 @@ public class Main extends javax.swing.JFrame {
         deleteItem.addActionListener((ActionEvent e) -> {
             selectedCrudable.deleteAction();
         });
-        
+
         crudMenu.add(clearForm);
         crudMenu.add(createItem);
         crudMenu.add(updateItem);
         crudMenu.add(deleteItem);
-        
+
         jMenuBar1.add(crudMenu);
     }
 
@@ -297,13 +330,16 @@ public class Main extends javax.swing.JFrame {
         setCurrentAccountMenu();
 
         if ("Admin".equals(user.getRole())) {
+            createAdminPanels();
             setAdminTabs();
             setAdminMenu();
         } else {
+            createUserPanels();
             selectedCrudable = movieCrud;
             selectedRefreshable = movieCrud;
             setUserTabs();
             setUserMenu("movie");
+            prepareTabs();
         }
     }
 
