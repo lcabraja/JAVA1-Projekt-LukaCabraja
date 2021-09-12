@@ -25,11 +25,24 @@ public class RoleTableModel extends AbstractTableModel {
         COLUMN_NAMES[0] = "ID " + ROLE_TYPE.name();
     }
 
-    public void setMovies(List<Role> roles) {
+    public void setRoles(List<Role> roles) {
         this.roles = roles;
         fireTableDataChanged();
     }
 
+    public void addRole(Role role) {
+        this.roles.add(role);
+        fireTableDataChanged();
+    }
+
+    public boolean contains(Role role) {
+        return this.roles.contains(role);
+    }
+
+    public Role getRoleAt(int rowIndex) {
+        return roles.get(rowIndex);
+    }
+    
     @Override
     public int getRowCount() {
         return roles.size();
