@@ -14,7 +14,7 @@ import javax.swing.table.AbstractTableModel;
  */
 public class RoleTableModel extends AbstractTableModel {
 
-    private static final String[] COLUMN_NAMES = {"ID Role", "Person ID", "Alternate Name", "Full Name"};
+    private final String[] COLUMN_NAMES = {"ID Role", "Person ID", "Alternate Name", "Full Name"};
     private final RoleTypes ROLE_TYPE;
 
     private List<Role> roles;
@@ -22,7 +22,7 @@ public class RoleTableModel extends AbstractTableModel {
     public RoleTableModel(List<Role> roles, RoleTypes roleType) {
         this.roles = roles;
         ROLE_TYPE = roleType;
-        COLUMN_NAMES[1] = "ID " + ROLE_TYPE.name();
+        COLUMN_NAMES[0] = "ID " + ROLE_TYPE.name();
     }
 
     public void setMovies(List<Role> roles) {
