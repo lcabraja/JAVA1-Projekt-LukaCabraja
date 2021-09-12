@@ -10,6 +10,6 @@ package hr.algebra.user;
  * @author lcabraja
  */
 public interface Refreshable {
-    
+
     public void refreshData();
 }
