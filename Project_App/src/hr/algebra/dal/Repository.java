@@ -36,6 +36,7 @@ public interface Repository {
     void deleteMovie(int id) throws Exception;
     Optional<Movie> selectMovie(int id) throws Exception;
     List<Movie> selectMovies() throws Exception;
+    List<Movie> selectMoviesFull() throws Exception;
     
     int createUser(User newUser) throws Exception;
     Optional<User> selectUser(String username) throws Exception;
