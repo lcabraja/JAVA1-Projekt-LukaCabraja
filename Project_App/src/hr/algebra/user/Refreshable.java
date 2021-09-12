@@ -11,5 +11,5 @@ package hr.algebra.user;
  */
 public interface Refreshable {
     
-    public void RefreshData();
+    public void refreshData();
 }
