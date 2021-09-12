@@ -8,27 +8,29 @@ package hr.algebra.user;
 import hr.algebra.dal.Repository;
 import hr.algebra.dal.RepositoryFactory;
 import hr.algebra.model.Movie;
-import hr.algebra.model.MovieTableModel;
 import hr.algebra.model.MovieRolesTableModel;
 import hr.algebra.model.MovieShortTableModel;
 import hr.algebra.model.Role;
 import hr.algebra.model.RoleTableModel;
+import hr.algebra.model.RoleTransferable;
 import hr.algebra.model.RoleTypes;
-import hr.algebra.utils.IconUtils;
 import hr.algebra.utils.MessageUtils;
-import java.io.File;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
-import java.sql.Date;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.ImageIcon;
+import javax.swing.DropMode;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.TransferHandler;
+import static javax.swing.TransferHandler.COPY;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.text.JTextComponent;
 
@@ -36,7 +38,7 @@ import javax.swing.text.JTextComponent;
  *
  * @author lcabraja
  */
-public class PersonCRUD extends javax.swing.JPanel implements Crudable {
+public class PersonCRUD extends javax.swing.JPanel implements Crudable, Refreshable {
 
     private final RoleTypes ROLE_TYPE;
 
@@ -57,9 +59,13 @@ public class PersonCRUD extends javax.swing.JPanel implements Crudable {
 
     private Repository repository;
 
-    private AbstractTableModel peopleTableModel;
-    private AbstractTableModel moviesPeopleTableModel;
-    private AbstractTableModel moviesShortTableModel;
+    private List<Role> roles;
+    private Movie selectedMovie;
+    private Role selectedRole;
+
+    private RoleTableModel roleTableModel;
+    private MovieRolesTableModel movieRolesTableModel;
+    private MovieShortTableModel moviesShortTableModel;
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -83,7 +89,7 @@ public class PersonCRUD extends javax.swing.JPanel implements Crudable {
         lbErrFullName = new javax.swing.JLabel();
         tfFullName = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
-        tbPeople = new javax.swing.JTable();
+        tbRoles = new javax.swing.JTable();
         jScrollPane2 = new javax.swing.JScrollPane();
         tbMoviesShort = new javax.swing.JTable();
         jScrollPane3 = new javax.swing.JScrollPane();
@@ -116,7 +122,7 @@ public class PersonCRUD extends javax.swing.JPanel implements Crudable {
 
         tfFullName.setText("jTextField1");
 
-        tbPeople.setModel(new javax.swing.table.DefaultTableModel(
+        tbRoles.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -127,12 +133,12 @@ public class PersonCRUD extends javax.swing.JPanel implements Crudable {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        tbPeople.addMouseListener(new java.awt.event.MouseAdapter() {
+        tbRoles.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tbPeopleMouseClicked(evt);
+                tbRolesMouseClicked(evt);
             }
         });
-        jScrollPane1.setViewportView(tbPeople);
+        jScrollPane1.setViewportView(tbRoles);
 
         tbMoviesShort.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -240,16 +246,31 @@ public class PersonCRUD extends javax.swing.JPanel implements Crudable {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void tbPeopleMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbPeopleMouseClicked
-        getSelectedTableItemID(tbPeople, peopleTableModel);
-    }//GEN-LAST:event_tbPeopleMouseClicked
+    private void tbRolesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbRolesMouseClicked
+        int selectedTableItemID = getSelectedTableItemID(tbRoles, roleTableModel);
+        Optional<Role> roleFromRepo = getRoleFromRepository(selectedTableItemID);
+        if (roleFromRepo.isPresent()) {
+            selectedRole = roleFromRepo.get();
+            fillForm(roleFromRepo.get());
+        }
+    }//GEN-LAST:event_tbRolesMouseClicked
 
     private void tbMoviesPeopleMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbMoviesPeopleMouseClicked
-        getSelectedTableItemID(tbMoviesPeople, moviesPeopleTableModel);
+        getSelectedTableItemID(tbMoviesPeople, movieRolesTableModel);
     }//GEN-LAST:event_tbMoviesPeopleMouseClicked
 
     private void tbMoviesShortMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbMoviesShortMouseClicked
-        getSelectedTableItemID(tbMoviesShort, moviesShortTableModel);
+        int selectedTableItemID = getSelectedTableItemID(tbMoviesShort, moviesShortTableModel);
+        try {
+            Optional<Movie> selectedMovie = repository.selectMovie(selectedTableItemID);
+            if (selectedMovie.isPresent()) {
+                this.selectedMovie = selectedMovie.get();
+                updateRolesFromRepository();
+                movieRolesTableModel.setMovieRoles(this.selectedMovie);
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(PersonCRUD.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_tbMoviesShortMouseClicked
 
     // <editor-fold defaultstate="collapsed" desc="Variables declaration">
@@ -267,7 +288,7 @@ public class PersonCRUD extends javax.swing.JPanel implements Crudable {
     private javax.swing.JLabel lbRoleID;
     private javax.swing.JTable tbMoviesPeople;
     private javax.swing.JTable tbMoviesShort;
-    private javax.swing.JTable tbPeople;
+    private javax.swing.JTable tbRoles;
     private javax.swing.JTextField tfAlternateName;
     private javax.swing.JTextField tfFullName;
     private javax.swing.JTextField tfPersonID;
@@ -279,12 +300,12 @@ public class PersonCRUD extends javax.swing.JPanel implements Crudable {
         try {
             initValidation();
             initRepository();
-            initTables();
             initFields();
+            initTables();
             clearForm();
 
         } catch (Exception ex) {
-            Logger.getLogger(MovieCRUD.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(PersonCRUD.class.getName()).log(Level.SEVERE, null, ex);
             MessageUtils.showErrorMessage("Unrecoverable error", "Cannot initiate the form");
             System.exit(1);
         }
@@ -300,18 +321,40 @@ public class PersonCRUD extends javax.swing.JPanel implements Crudable {
         repository = RepositoryFactory.getRepository();
     }
 
+    private void initFields() {
+        selectedRole = null;
+        try {
+            switch (ROLE_TYPE) {
+                case Actor:
+                    roles = repository.selectActors();
+                    break;
+                case Director:
+                    roles = repository.selectDirectors();
+                    break;
+                default:
+                    throw new RuntimeException("Cannot find requested Role Type");
+            }
+        } catch (Exception ex) {
+            showDatabaseConnectionError();
+        }
+    }
+
     private void initTables() throws Exception {
-        tbPeople.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        tbPeople.setAutoCreateRowSorter(true);
-        tbPeople.setRowHeight(25);
-        peopleTableModel = new RoleTableModel(null, ROLE_TYPE);
-        tbPeople.setModel(peopleTableModel);
+        tbRoles.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        tbRoles.setAutoCreateRowSorter(true);
+        tbRoles.setRowHeight(25);
+        roleTableModel = new RoleTableModel(roles, ROLE_TYPE);
+        tbRoles.setModel(roleTableModel);
+        tbRoles.setDragEnabled(true);
+        tbRoles.setTransferHandler(new ExportTransferHandler());
 
         tbMoviesPeople.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tbMoviesPeople.setAutoCreateRowSorter(true);
         tbMoviesPeople.setRowHeight(25);
-        moviesPeopleTableModel = new MovieRolesTableModel(null, ROLE_TYPE);
-        tbMoviesPeople.setModel(moviesPeopleTableModel);
+        movieRolesTableModel = new MovieRolesTableModel(new Movie(), ROLE_TYPE);
+        tbMoviesPeople.setModel(movieRolesTableModel);
+        tbMoviesPeople.setDropMode(DropMode.ON);
+        tbMoviesPeople.setTransferHandler(new ImportTransferHandler());
 
         tbMoviesShort.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tbMoviesShort.setAutoCreateRowSorter(true);
@@ -320,10 +363,111 @@ public class PersonCRUD extends javax.swing.JPanel implements Crudable {
         tbMoviesShort.setModel(moviesShortTableModel);
     }
 
-    private void initFields() {
-//        oldPosters = new ArrayList<>();
-//        newPosters = new ArrayList<>();
-//        lastPoster = null;
+    private void updateRolesFromRepository() {
+        try {
+            switch (ROLE_TYPE) {
+                case Actor:
+                    roleTableModel.setRoles(repository.selectActors());
+                    break;
+                case Director:
+                    roleTableModel.setRoles(repository.selectDirectors());
+                    break;
+                default:
+                    throw new RuntimeException("Cannot find requested Role Type");
+            }
+        } catch (Exception ex) {
+            showDatabaseConnectionError();
+        }
+    }
+
+    private int createRoleInRepository(Role role) {
+        try {
+            switch (ROLE_TYPE) {
+                case Actor:
+                    return repository.createActor(role);
+                case Director:
+                    return repository.createDirector(role);
+                default:
+                    throw new RuntimeException("Cannot find requested Role Type");
+            }
+        } catch (Exception ex) {
+            showDatabaseConnectionError();
+            return -1;
+        }
+    }
+
+    private void updateRoleInRepository(Role role) {
+        try {
+            switch (ROLE_TYPE) {
+                case Actor:
+                    repository.updateActor(role.getIdRole(), role);
+                    break;
+                case Director:
+                    repository.updateDirector(role.getIdRole(), role);
+                    break;
+                default:
+                    throw new RuntimeException("Cannot find requested Role Type");
+            }
+        } catch (Exception ex) {
+            showDatabaseConnectionError();
+        }
+    }
+
+    private Optional<Role> getRoleFromRepository(int idRole) {
+        try {
+            switch (ROLE_TYPE) {
+                case Actor:
+                    return repository.selectActor(idRole);
+                case Director:
+                    return repository.selectDirector(idRole);
+                default:
+                    throw new RuntimeException("Cannot find requested Role Type");
+            }
+        } catch (Exception ex) {
+            showDatabaseConnectionError();
+            return null;
+        }
+    }
+
+    private class ExportTransferHandler extends TransferHandler {
+
+        @Override
+        public int getSourceActions(JComponent c) {
+            // defines icon shown in target before drop
+            return COPY;
+            //return MOVE;
+        }
+
+        @Override
+        public Transferable createTransferable(JComponent c) {
+            return new RoleTransferable(roleTableModel.getRoleAt(tbRoles.getSelectedRow()));
+        }
+    }
+
+    private class ImportTransferHandler extends TransferHandler {
+
+        // we define whether we can import stringFlavor that we need for JList<String>
+        @Override
+        public boolean canImport(TransferHandler.TransferSupport support) {
+            return support.isDataFlavorSupported(RoleTransferable.ROLE_FLAVOR);
+        }
+
+        // we import the data
+        @Override
+        public boolean importData(TransferHandler.TransferSupport support) {
+            Transferable transferable = support.getTransferable();
+            try {
+                Role data = (Role) transferable.getTransferData(RoleTransferable.ROLE_FLAVOR);
+                if (!movieRolesTableModel.contains(data)) {
+                    movieRolesTableModel.addMovieRole(data);
+                    return true;
+                }
+
+            } catch (UnsupportedFlavorException | IOException ex) {
+                Logger.getLogger(PersonCRUD.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            return false;
+        }
     }
 
     private boolean formValid() {
@@ -337,8 +481,6 @@ public class PersonCRUD extends javax.swing.JPanel implements Crudable {
             //System.out.println(validationFields.get(i).getText().substring(0, min) + " | " + validationLengths.get(i) + " >= " + validationFields.get(i).getText().trim().length() + " = " + condition);
             ok &= condition;
             errorLabels.get(i).setText(!condition ? "X" : "");
-            if (!ok) {
-            }
         }
         return ok;
     }
@@ -365,28 +507,84 @@ public class PersonCRUD extends javax.swing.JPanel implements Crudable {
         tfAlternateName.setText(role.getAlternateName());
         tfFullName.setText(role.getFullName());
     }
-    
-    private void fillMoviesRolesTable(List<Role> roles) {
-        
-    }
 
     @Override
     public void createAction() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (formValid()) {
+            Role newRole = new Role(
+                    -1,
+                    -1,
+                    tfFullName.getText().trim(),
+                    tfAlternateName.getText().trim()
+            );
+            try {
+                createRoleInRepository(newRole);
+                updateRolesFromRepository();
+                clearAction();
+            } catch (Exception ex) {
+                Logger.getLogger(MovieCRUD.class.getName()).log(Level.SEVERE, null, ex);
+                showDatabaseConnectionError();
+            }
+        }
     }
 
     @Override
     public void updateAction() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (formValid()) {
+            Role newRole = new Role(
+                    selectedRole.getIdRole(),
+                    selectedRole.getPersonID(),
+                    tfFullName.getText().trim(),
+                    tfAlternateName.getText().trim()
+            );
+            try {
+                updateRoleInRepository(newRole);
+                updateRolesFromRepository();
+                clearAction();
+            } catch (Exception ex) {
+                Logger.getLogger(MovieCRUD.class.getName()).log(Level.SEVERE, null, ex);
+                showDatabaseConnectionError();
+            }
+        }
     }
 
     @Override
     public void deleteAction() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (MessageUtils.showConfirmDialog(
+                "Delete movie",
+                "Do you really want to delete: " + selectedRole.getFullName()) == JOptionPane.YES_OPTION) {
+            try {
+                repository.deleteMovie(selectedRole.getIdRole());
+                clearAction();
+                refreshData();
+            } catch (Exception ex) {
+                Logger.getLogger(MovieCRUD.class.getName()).log(Level.SEVERE, null, ex);
+                showDatabaseConnectionError();
+            }
+        }
     }
 
     @Override
     public void clearAction() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        clearForm();
+        movieRolesTableModel.clearModel();
+        tbRoles.clearSelection();
+        tbMoviesShort.clearSelection();
+    }
+
+    @Override
+    public void refreshData() {
+        try {
+            movieRolesTableModel.clearModel();
+            moviesShortTableModel.setMovies(repository.selectMovies());
+            roleTableModel.setRoles(repository.selectActors());
+        } catch (Exception ex) {
+            Logger.getLogger(MovieCRUD.class.getName()).log(Level.SEVERE, null, ex);
+            showDatabaseConnectionError();
+        }
+    }
+
+    private void showDatabaseConnectionError() {
+        MessageUtils.showInformationMessage("Database Error", "Could not connect to database, please try again later...");
     }
 }
