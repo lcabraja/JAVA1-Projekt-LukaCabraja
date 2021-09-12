@@ -9,6 +9,7 @@ import hr.algebra.admin.CinestarDownload;
 import hr.algebra.dal.Repository;
 import hr.algebra.dal.RepositoryFactory;
 import hr.algebra.login.Login;
+import hr.algebra.model.Role;
 import hr.algebra.model.User;
 import hr.algebra.user.Crudable;
 import hr.algebra.user.Refreshable;
@@ -223,6 +224,9 @@ public class Main extends javax.swing.JFrame {
         loginForm = new Login(this);
         cinestarDownload = new CinestarDownload();
         movieCrud = new MovieCRUD();
+        actorCrud = new PersonCRUD("Actor");
+        directorCrud = new PersonCRUD("Director");
+        
     }
 
     private void setLoginTabs() {
