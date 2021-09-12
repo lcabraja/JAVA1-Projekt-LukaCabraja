@@ -356,12 +356,16 @@ go
 drop procedure if exists proc_update_actor
 go
 create proc proc_update_actor @IDActor int,
-                              @Name nvarchar(128)
+                              @FullName nvarchar(128),
+                              @AlternateName nvarchar(128)
 as
 begin
     update Persons
-    set FullName = @Name
+    set FullName = @FullName
     where IDPerson = (select PersonID from Actors where IDActor = @IDActor)
+    update Actors
+    set AlternateName = @AlternateName
+    where IDActor = @IDActor
 end
 go
 drop procedure if exists proc_delete_actor
@@ -369,6 +373,9 @@ go
 create proc proc_delete_actor @IDActor int
 as
 begin
+    delete
+    from MovieActor
+    where ActorID = @IDActor
     delete
     from Actors
     where idactor = @IDActor
@@ -437,12 +444,16 @@ go
 drop procedure if exists proc_update_director
 go
 create proc proc_update_director @IDDirector int,
-                                 @Name nvarchar(128)
+                              @FullName nvarchar(128),
+                              @AlternateName nvarchar(128)
 as
 begin
     update Persons
-    set FullName = @Name
+    set FullName = @FullName
     where IDPerson = (select PersonID from Directors where IDDirector = @IDDirector)
+    update Directors
+    set AlternateName = @AlternateName
+    where IDDirector = @IDDirector
 end
 go
 drop procedure if exists proc_delete_director
@@ -450,6 +461,9 @@ go
 create proc proc_delete_director @IDDirector int
 as
 begin
+    delete
+    from MovieDirector
+    where DirectorID = @IDDirector
     delete
     from Directors
     where iddirector = @IDDirector

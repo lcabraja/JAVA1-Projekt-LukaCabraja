@@ -59,13 +59,13 @@ public class SqlRepository implements Repository {
     private static final String PROC_CREATE_ACTOR = "{ CALL proc_create_actor  (?,?) }";
     private static final String PROC_READ_ACTOR = "{ CALL proc_read_actor (?) }";
     private static final String PROC_READ_ACTORS = "{ CALL proc_read_actors }";
-    private static final String PROC_UPDATE_ACTOR = "{ CALL proc_update_actor  (?,?) }";
+    private static final String PROC_UPDATE_ACTOR = "{ CALL proc_update_actor  (?,?,?) }";
     private static final String PROC_DELETE_ACTOR = "{ CALL proc_delete_actor  (?) }";
 
     private static final String PROC_CREATE_DIRECTOR = "{ CALL proc_create_director  (?,?) }";
     private static final String PROC_READ_DIRECTOR = "{ CALL proc_read_director  (?) }";
     private static final String PROC_READ_DIRECTORS = "{ CALL proc_read_directors }";
-    private static final String PROC_UPDATE_DIRECTOR = "{ CALL proc_update_director  (?,?) }";
+    private static final String PROC_UPDATE_DIRECTOR = "{ CALL proc_update_director  (?,?,?) }";
     private static final String PROC_DELETE_DIRECTOR = "{ CALL proc_delete_director (?) }";
 
     private static final String PROC_CREATE_USER = "{ CALL proc_create_user  (?,?,?) }";
@@ -148,6 +148,7 @@ public class SqlRepository implements Repository {
 
             stmt.setInt(1, data.getIdRole());
             stmt.setString(2, data.getFullName());
+            stmt.setString(3, data.getAlternateName());
 
             stmt.executeUpdate();
         }
@@ -290,6 +291,7 @@ public class SqlRepository implements Repository {
 
             stmt.setInt(1, data.getIdRole());
             stmt.setString(2, data.getFullName());
+            stmt.setString(3, data.getAlternateName());
 
             stmt.executeUpdate();
         }
@@ -530,6 +532,37 @@ public class SqlRepository implements Repository {
     }
 
     @Override
+    public List<Movie> selectMoviesFull() throws Exception {
+        List<Movie> movies = new ArrayList<>();
+        DataSource dataSource = DataSourceSingleton.getInstance();
+        try (Connection con = dataSource.getConnection();
+                CallableStatement stmt = con.prepareCall(PROC_READ_MOVIES);
+                ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                Movie newMovie = new Movie(
+                        rs.getInt(ID_MOVIE),
+                        rs.getString(TITLE),
+                        rs.getString(ORIGINAL_TITLE),
+                        rs.getString(HTML_DESCRIPTION),
+                        rs.getInt(LENGTH),
+                        rs.getString(GENRE),
+                        rs.getString(POSTER_FILE_PATH),
+                        rs.getString(TRAILER_LINK),
+                        rs.getString(LINK),
+                        rs.getString(GUID),
+                        rs.getDate(STARTS_PLAYING));
+
+                newMovie.setActors(selectMovieActors(newMovie.getIDMovie(), con));
+                newMovie.setDirectors(selectMovieDirectors(newMovie.getIDMovie(), con));
+
+                movies.add(newMovie);
+            }
+        }
+        return movies;
+    }
+
+    @Override
     public int createUser(User user) throws Exception {
         DataSource dataSource = DataSourceSingleton.getInstance();
         try (Connection con = dataSource.getConnection();
@@ -567,26 +600,26 @@ public class SqlRepository implements Repository {
     }
 
     @Override
-    public void createMovieActor(int ActorID, int MovieID) throws Exception {
+    public void createMovieActor(int movieID, int actorID) throws Exception {
         DataSource dataSource = DataSourceSingleton.getInstance();
         try (Connection con = dataSource.getConnection();
                 CallableStatement stmt = con.prepareCall(PROC_CREATE_MOVIE_ACTOR)) {
 
-            stmt.setInt(1, MovieID);
-            stmt.setInt(2, ActorID);
+            stmt.setInt(1, movieID);
+            stmt.setInt(2, actorID);
 
             stmt.executeUpdate();
         }
     }
 
     @Override
-    public void createMovieActors(int MovieID, List<Role> actors) throws Exception {
+    public void createMovieActors(int movieID, List<Role> actors) throws Exception {
         DataSource dataSource = DataSourceSingleton.getInstance();
         try (Connection con = dataSource.getConnection();
                 CallableStatement stmt = con.prepareCall(PROC_CREATE_MOVIE_ACTOR)) {
 
             for (Role actor : actors) {
-                stmt.setInt(1, MovieID);
+                stmt.setInt(1, movieID);
                 stmt.setInt(2, actor.getIdRole());
 
                 stmt.executeUpdate();
@@ -595,26 +628,32 @@ public class SqlRepository implements Repository {
     }
 
     @Override
-    public void deleteMovieActor(int MovieID, int ActorID) throws Exception {
+    public void deleteMovieActor(int movieID, int actorID) throws Exception {
         DataSource dataSource = DataSourceSingleton.getInstance();
         try (Connection con = dataSource.getConnection();
                 CallableStatement stmt = con.prepareCall(PROC_DELETE_MOVIE_ACTOR)) {
 
-            stmt.setInt(1, MovieID);
-            stmt.setInt(2, ActorID);
+            stmt.setInt(1, movieID);
+            stmt.setInt(2, actorID);
 
             stmt.executeUpdate();
         }
     }
 
     @Override
-    public List<Role> selectMovieActors(int MovieID) throws Exception {
+    public List<Role> selectMovieActors(int movieID) throws Exception {
         List<Role> actors = new ArrayList<>();
         DataSource dataSource = DataSourceSingleton.getInstance();
-        try (Connection con = dataSource.getConnection();
-                CallableStatement stmt = con.prepareCall(PROC_READ_MOVIE_ACTOR)) {
+        try (Connection con = dataSource.getConnection()) {
+            return selectMovieActors(movieID, con);
+        }
+    }
 
-            stmt.setInt(1, MovieID);
+    public List<Role> selectMovieActors(int movieID, Connection con) throws Exception {
+        List<Role> actors = new ArrayList<>();
+        try (CallableStatement stmt = con.prepareCall(PROC_READ_MOVIE_ACTOR)) {
+
+            stmt.setInt(1, movieID);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     actors.add(new Role(
@@ -629,26 +668,26 @@ public class SqlRepository implements Repository {
     }
 
     @Override
-    public void createMovieDirector(int MovieID, int RoleID) throws Exception {
+    public void createMovieDirector(int movieID, int directorID) throws Exception {
         DataSource dataSource = DataSourceSingleton.getInstance();
         try (Connection con = dataSource.getConnection();
                 CallableStatement stmt = con.prepareCall(PROC_CREATE_MOVIE_DIRECTOR)) {
 
-            stmt.setInt(1, MovieID);
-            stmt.setInt(2, RoleID);
+            stmt.setInt(1, movieID);
+            stmt.setInt(2, directorID);
 
             stmt.executeUpdate();
         }
     }
 
     @Override
-    public void createMovieDirectors(int MovieID, List<Role> directors) throws Exception {
+    public void createMovieDirectors(int movieID, List<Role> directors) throws Exception {
         DataSource dataSource = DataSourceSingleton.getInstance();
         try (Connection con = dataSource.getConnection();
                 CallableStatement stmt = con.prepareCall(PROC_CREATE_MOVIE_DIRECTOR)) {
 
             for (Role director : directors) {
-                stmt.setInt(1, MovieID);
+                stmt.setInt(1, movieID);
                 stmt.setInt(2, director.getIdRole());
 
                 stmt.executeUpdate();
@@ -657,26 +696,31 @@ public class SqlRepository implements Repository {
     }
 
     @Override
-    public void deleteMovieDirector(int MovieID, int RoleID) throws Exception {
+    public void deleteMovieDirector(int movieID, int directorID) throws Exception {
         DataSource dataSource = DataSourceSingleton.getInstance();
         try (Connection con = dataSource.getConnection();
                 CallableStatement stmt = con.prepareCall(PROC_DELETE_MOVIE_DIRECTOR)) {
 
-            stmt.setInt(1, MovieID);
-            stmt.setInt(2, RoleID);
+            stmt.setInt(1, movieID);
+            stmt.setInt(2, directorID);
 
             stmt.executeUpdate();
         }
     }
 
     @Override
-    public List<Role> selectMovieDirectors(int MovieID) throws Exception {
-        List<Role> directors = new ArrayList<>();
+    public List<Role> selectMovieDirectors(int movieID) throws Exception {
         DataSource dataSource = DataSourceSingleton.getInstance();
-        try (Connection con = dataSource.getConnection();
-                CallableStatement stmt = con.prepareCall(PROC_READ_MOVIE_DIRECTOR)) {
+        try (Connection con = dataSource.getConnection()) {
+            return selectMovieDirectors(movieID, con);
+        }
+    }
 
-            stmt.setInt(1, MovieID);
+    public List<Role> selectMovieDirectors(int movieID, Connection con) throws Exception {
+        List<Role> directors = new ArrayList<>();
+        try (CallableStatement stmt = con.prepareCall(PROC_READ_MOVIE_DIRECTOR)) {
+
+            stmt.setInt(1, movieID);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     directors.add(new Role(
