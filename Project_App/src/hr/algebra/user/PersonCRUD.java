@@ -262,9 +262,10 @@ public class PersonCRUD extends javax.swing.JPanel implements Crudable, Refresha
     private void tbMoviesShortMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbMoviesShortMouseClicked
         int selectedTableItemID = getSelectedTableItemID(tbMoviesShort, moviesShortTableModel);
         try {
-            Optional<Movie> selectedMovie = repository.selectMovie(selectedTableItemID);
-            if (selectedMovie.isPresent()) {
-                this.selectedMovie = selectedMovie.get();
+            Optional<Movie> currentSelection = repository.selectMovie(selectedTableItemID);
+            if (currentSelection.isPresent()) {
+                selectedMovie = currentSelection.get();
+                setRoleInMovie(selectedMovie, getRolesFromRepository(selectedMovie.getIDMovie()));
                 updateRolesFromRepository();
                 movieRolesTableModel.setMovieRoles(this.selectedMovie);
             }
@@ -353,7 +354,7 @@ public class PersonCRUD extends javax.swing.JPanel implements Crudable, Refresha
         tbMoviesPeople.setRowHeight(25);
         movieRolesTableModel = new MovieRolesTableModel(new Movie(), ROLE_TYPE);
         tbMoviesPeople.setModel(movieRolesTableModel);
-        tbMoviesPeople.setDropMode(DropMode.ON);
+        tbMoviesPeople.setDropMode(DropMode.ON_OR_INSERT_ROWS);
         tbMoviesPeople.setTransferHandler(new ImportTransferHandler());
 
         tbMoviesShort.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -380,6 +381,23 @@ public class PersonCRUD extends javax.swing.JPanel implements Crudable, Refresha
         }
     }
 
+    private void setRoleInMovie(Movie movieSet, List<Role> roles) {
+        try {
+            switch (ROLE_TYPE) {
+                case Actor:
+                    movieSet.setActors(roles);
+                    break;
+                case Director:
+                    movieSet.setDirectors(roles);
+                    break;
+                default:
+                    throw new RuntimeException("Cannot find requested Role Type");
+            }
+        } catch (Exception ex) {
+            showDatabaseConnectionError();
+        }
+    }
+
     private int createRoleInRepository(Role role) {
         try {
             switch (ROLE_TYPE) {
@@ -393,6 +411,23 @@ public class PersonCRUD extends javax.swing.JPanel implements Crudable, Refresha
         } catch (Exception ex) {
             showDatabaseConnectionError();
             return -1;
+        }
+    }
+
+    private void createMovieRoleInRepository(int movieID, int roleID) {
+        try {
+            switch (ROLE_TYPE) {
+                case Actor:
+                    repository.createMovieActor(movieID, roleID);
+                    break;
+                case Director:
+                    repository.createMovieDirector(movieID, roleID);
+                    break;
+                default:
+                    throw new RuntimeException("Cannot find requested Role Type");
+            }
+        } catch (Exception ex) {
+            showDatabaseConnectionError();
         }
     }
 
@@ -429,6 +464,39 @@ public class PersonCRUD extends javax.swing.JPanel implements Crudable, Refresha
         }
     }
 
+    private List<Role> getRolesFromRepository(int idMovie) {
+        try {
+            switch (ROLE_TYPE) {
+                case Actor:
+                    return repository.selectMovieActors(idMovie);
+                case Director:
+                    return repository.selectMovieDirectors(idMovie);
+                default:
+                    throw new RuntimeException("Cannot find requested Role Type");
+            }
+        } catch (Exception ex) {
+            showDatabaseConnectionError();
+            return null;
+        }
+    }
+
+    private void deleteFromRepository(int idRole) {
+        try {
+            switch (ROLE_TYPE) {
+                case Actor:
+                    repository.deleteActor(idRole);
+                    break;
+                case Director:
+                    repository.deleteDirector(idRole);
+                    break;
+                default:
+                    throw new RuntimeException("Cannot find requested Role Type");
+            }
+        } catch (Exception ex) {
+            showDatabaseConnectionError();
+        }
+    }
+
     private class ExportTransferHandler extends TransferHandler {
 
         @Override
@@ -460,10 +528,13 @@ public class PersonCRUD extends javax.swing.JPanel implements Crudable, Refresha
                 Role data = (Role) transferable.getTransferData(RoleTransferable.ROLE_FLAVOR);
                 if (!movieRolesTableModel.contains(data)) {
                     movieRolesTableModel.addMovieRole(data);
+                    createMovieRoleInRepository(selectedMovie.getIDMovie(), data.getIdRole());
                     return true;
                 }
 
             } catch (UnsupportedFlavorException | IOException ex) {
+                Logger.getLogger(PersonCRUD.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (Exception ex) {
                 Logger.getLogger(PersonCRUD.class.getName()).log(Level.SEVERE, null, ex);
             }
             return false;
@@ -494,11 +565,15 @@ public class PersonCRUD extends javax.swing.JPanel implements Crudable, Refresha
         });
     }
 
-    private int getSelectedTableItemID(JTable tableClicked, AbstractTableModel modelReference) {
+    private int getSelectedTableItemID(JTable tableClicked, AbstractTableModel modelReference, int columnIndex) {
         int selectedRow = tableClicked.getSelectedRow();
         int rowIndex = tableClicked.convertRowIndexToModel(selectedRow);
-        int selectedItemID = (int) modelReference.getValueAt(rowIndex, 0);
+        int selectedItemID = (int) modelReference.getValueAt(rowIndex, columnIndex);
         return selectedItemID;
+    }
+
+    private int getSelectedTableItemID(JTable tableClicked, AbstractTableModel modelReference) {
+        return getSelectedTableItemID(tableClicked, modelReference, 0);
     }
 
     private void fillForm(Role role) {
@@ -554,7 +629,7 @@ public class PersonCRUD extends javax.swing.JPanel implements Crudable, Refresha
                 "Delete movie",
                 "Do you really want to delete: " + selectedRole.getFullName()) == JOptionPane.YES_OPTION) {
             try {
-                repository.deleteMovie(selectedRole.getIdRole());
+                deleteFromRepository(selectedRole.getIdRole());
                 clearAction();
                 refreshData();
             } catch (Exception ex) {
@@ -575,9 +650,12 @@ public class PersonCRUD extends javax.swing.JPanel implements Crudable, Refresha
     @Override
     public void refreshData() {
         try {
+            final List<Movie> allMovies = repository.selectMovies();
+
             movieRolesTableModel.clearModel();
-            moviesShortTableModel.setMovies(repository.selectMovies());
+            moviesShortTableModel.setMovies(allMovies);
             roleTableModel.setRoles(repository.selectActors());
+
         } catch (Exception ex) {
             Logger.getLogger(MovieCRUD.class.getName()).log(Level.SEVERE, null, ex);
             showDatabaseConnectionError();
