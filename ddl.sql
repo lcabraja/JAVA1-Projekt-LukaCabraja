@@ -473,9 +473,10 @@ go
 create proc proc_read_movie_actor @MovieID int
 as
 begin
-    select A.*
-    from MovieActor MA
-             inner join Actors A on A.IDActor = MA.ActorID
+    select A.*, P.FullName
+    from Actors A
+             inner join Persons P on P.IDPerson = A.PersonID
+             inner join MovieActor MA on A.IDActor = MA.ActorID
     where MovieID = @MovieID
 end
 go
@@ -509,9 +510,10 @@ go
 create proc proc_read_movie_director @MovieID int
 as
 begin
-    select D.*
-    from MovieDirector MD
-             inner join Directors D on D.IDDirector = MD.DirectorID
+    select A.*, P.FullName
+    from Directors A
+             inner join Persons P on P.IDPerson = A.PersonID
+             inner join MovieDirector MA on A.IDDirector = MA.DirectorID
     where MovieID = @MovieID
 end
 go
