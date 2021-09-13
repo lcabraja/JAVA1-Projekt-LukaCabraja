@@ -9,11 +9,16 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 
 /**
  *
  * @author lcabraja
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Movie {
 
     private int idMovie;
@@ -27,7 +32,13 @@ public class Movie {
     private String link;
     private String guid;
     private Date startsPlaying;
+
+    @XmlElementWrapper
+    @XmlElement(name = "actor")
     private List<Role> actors;
+
+    @XmlElementWrapper
+    @XmlElement(name = "director")
     private List<Role> directors;
 
     public Movie() {
@@ -183,5 +194,5 @@ public class Movie {
     @Override
     public String toString() {
         return "Movie{" + "idMovie=" + idMovie + ", title=" + title + ", originalTitle=" + originalTitle + ", htmlDescription=" + htmlDescription + ", length=" + length + ", genre=" + genre + ", posterFilePath=" + posterFilePath + ", trailerLink=" + trailerLink + ", link=" + link + ", guid=" + guid + ", startsPlaying=" + startsPlaying + ", actors=" + actors + ", directors=" + directors + '}';
-    }   
+    }
 }
